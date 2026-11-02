@@ -4,6 +4,7 @@ struct Videira: View {
     @EnvironmentObject var loja: Loja
     @State private var largura: CGFloat = 0
     @State private var aberto = Date()
+    @State private var caida: Date?
 
     private let tipos = TipoDeVideira.todas
     private var total: Int { loja.feitos.count }
@@ -30,9 +31,22 @@ struct Videira: View {
     }
 
     private var destaque: some View {
-        let planta = DesenhoDaPlanta(tipo: atual, estagio: Double(estagio), crescerDesde: aberto)
+        let planta = DesenhoDaPlanta(tipo: atual, estagio: Double(estagio), crescerDesde: aberto, caidaDesde: caida)
             .frame(height: 440)
             .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
+            .onHover { dentro in
+                guard dentro, estagio >= 20 else { return }
+                if let caida, Date().timeIntervalSince(caida) < DesenhoDaPlanta.duracaoDaQueda { return }
+                caida = Date()
+            }
+            .overlay(alignment: .bottom) {
+                if estagio >= 20 {
+                    Label("Passe o mouse na árvore para sacudir", systemImage: "hand.point.up.left")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
         return Group {
             if largura > 900 {
                 HStack(alignment: .center, spacing: 32) {
