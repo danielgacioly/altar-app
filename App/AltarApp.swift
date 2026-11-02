@@ -1,8 +1,33 @@
 import ServiceManagement
 import SwiftUI
 
+extension Notification.Name {
+    static let abrirAltar = Notification.Name("abrirAltar")
+}
+
+final class Delegado: NSObject, NSApplicationDelegate {
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        NotificationCenter.default.post(name: .abrirAltar, object: nil)
+        return true
+    }
+}
+
+struct IconeDaBarra: View {
+    let feito: Bool
+    @Environment(\.openWindow) private var abrirJanela
+
+    var body: some View {
+        Image(feito ? "BarraFeito" : "Barra")
+            .onReceive(NotificationCenter.default.publisher(for: .abrirAltar)) { _ in
+                abrirJanela(id: "principal")
+                NSApp.activate()
+            }
+    }
+}
+
 @main
 struct AltarApp: App {
+    @NSApplicationDelegateAdaptor private var delegado: Delegado
     @StateObject private var loja: Loja
     @StateObject private var lembrete: Lembrete
 
@@ -17,9 +42,12 @@ struct AltarApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra(nomeDoApp, image: lembrete.estado.feitoEm == nil ? "Barra" : "BarraFeito") {
+        MenuBarExtra {
             MenuDoApp()
                 .environmentObject(lembrete)
+        } label: {
+            IconeDaBarra(feito: lembrete.estado.feitoEm != nil)
+                .accessibilityLabel(nomeDoApp)
         }
 
         Window(nomeDoApp, id: "principal") {
