@@ -1,0 +1,346 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E7A9684704550C5D89CA556 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E538987224E11FF3928B602 /* Config.swift */; };
+		1C75906AA81C62020288E9B9 /* Lembrete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */; };
+		294C4F3BC2E387257CFB4934 /* Arquivos.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */; };
+		34EC9032244322C716ACD523 /* Ajustes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA27D74956EB707245440579 /* Ajustes.swift */; };
+		4137656ADE6FE884913EA05B /* Historico.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232FBEE22B2FCF5778D4D550 /* Historico.swift */; };
+		5B21088EFF7E2426DEDAC152 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D44F83B5FE1B38D39523A95 /* Audio.swift */; };
+		685EDE16569B528CA6D519E0 /* JanelaPrincipal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */; };
+		8191E6BCB4A2D3DC773B79EE /* versiculos.json in Resources */ = {isa = PBXBuildFile; fileRef = FA86F938F6FCC4704042D78B /* versiculos.json */; };
+		846BAA82FC8E4AF85FCA780A /* Versiculos.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19DFF09F3281DA08DF9EEBE /* Versiculos.swift */; };
+		87CA99ADE45E941AAF72E755 /* AltarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF49793A42FA212A4F9BC86 /* AltarApp.swift */; };
+		CF9127EC943DC088C1E8A006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */; };
+		E522534E2EE6D08878A68F23 /* PaginaDoDia.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AE06C3E33F088642165239 /* PaginaDoDia.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lembrete.swift; sourceTree = "<group>"; };
+		0E538987224E11FF3928B602 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JanelaPrincipal.swift; sourceTree = "<group>"; };
+		232FBEE22B2FCF5778D4D550 /* Historico.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Historico.swift; sourceTree = "<group>"; };
+		4D44F83B5FE1B38D39523A95 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		97F78B14321D457BE9A5F15B /* Altar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Altar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9BF49793A42FA212A4F9BC86 /* AltarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltarApp.swift; sourceTree = "<group>"; };
+		A5AE06C3E33F088642165239 /* PaginaDoDia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginaDoDia.swift; sourceTree = "<group>"; };
+		B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C19DFF09F3281DA08DF9EEBE /* Versiculos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Versiculos.swift; sourceTree = "<group>"; };
+		CA27D74956EB707245440579 /* Ajustes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ajustes.swift; sourceTree = "<group>"; };
+		F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arquivos.swift; sourceTree = "<group>"; };
+		FA86F938F6FCC4704042D78B /* versiculos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = versiculos.json; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3EB86899589261BCD6FF6CDF = {
+			isa = PBXGroup;
+			children = (
+				FA86F938F6FCC4704042D78B /* versiculos.json */,
+				64F08A56949FB0CE08812EF9 /* App */,
+				90CEE8C763826A4668A097AE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		64F08A56949FB0CE08812EF9 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CA27D74956EB707245440579 /* Ajustes.swift */,
+				9BF49793A42FA212A4F9BC86 /* AltarApp.swift */,
+				F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */,
+				B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */,
+				4D44F83B5FE1B38D39523A95 /* Audio.swift */,
+				0E538987224E11FF3928B602 /* Config.swift */,
+				232FBEE22B2FCF5778D4D550 /* Historico.swift */,
+				0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */,
+				0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */,
+				A5AE06C3E33F088642165239 /* PaginaDoDia.swift */,
+				C19DFF09F3281DA08DF9EEBE /* Versiculos.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		90CEE8C763826A4668A097AE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				97F78B14321D457BE9A5F15B /* Altar.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		263DCAD1FDBA7D2C80C46955 /* Altar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40DDC6A72BD087996930C45C /* Build configuration list for PBXNativeTarget "Altar" */;
+			buildPhases = (
+				C4B142492ED4278A83D19FBD /* Sources */,
+				19B7860121F831A8C5538F9A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Altar;
+			packageProductDependencies = (
+			);
+			productName = Altar;
+			productReference = 97F78B14321D457BE9A5F15B /* Altar.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B9A61B4E5BC3496F26E5B0BC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					263DCAD1FDBA7D2C80C46955 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 816259622D67CC4170829458 /* Build configuration list for PBXProject "Altar" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3EB86899589261BCD6FF6CDF;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 90CEE8C763826A4668A097AE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				263DCAD1FDBA7D2C80C46955 /* Altar */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		19B7860121F831A8C5538F9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF9127EC943DC088C1E8A006 /* Assets.xcassets in Resources */,
+				8191E6BCB4A2D3DC773B79EE /* versiculos.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C4B142492ED4278A83D19FBD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34EC9032244322C716ACD523 /* Ajustes.swift in Sources */,
+				87CA99ADE45E941AAF72E755 /* AltarApp.swift in Sources */,
+				294C4F3BC2E387257CFB4934 /* Arquivos.swift in Sources */,
+				5B21088EFF7E2426DEDAC152 /* Audio.swift in Sources */,
+				0E7A9684704550C5D89CA556 /* Config.swift in Sources */,
+				4137656ADE6FE884913EA05B /* Historico.swift in Sources */,
+				685EDE16569B528CA6D519E0 /* JanelaPrincipal.swift in Sources */,
+				1C75906AA81C62020288E9B9 /* Lembrete.swift in Sources */,
+				E522534E2EE6D08878A68F23 /* PaginaDoDia.swift in Sources */,
+				846BAA82FC8E4AF85FCA780A /* Versiculos.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5797D771DFA2EDE6BA26C09B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		9BE17AB597C0017CB2A95773 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielacioly.altar;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		CE35E96B4C085C00BCF207A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielacioly.altar;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		EA9C90937C4BAAA54E2A294F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40DDC6A72BD087996930C45C /* Build configuration list for PBXNativeTarget "Altar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE35E96B4C085C00BCF207A5 /* Debug */,
+				9BE17AB597C0017CB2A95773 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		816259622D67CC4170829458 /* Build configuration list for PBXProject "Altar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA9C90937C4BAAA54E2A294F /* Debug */,
+				5797D771DFA2EDE6BA26C09B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B9A61B4E5BC3496F26E5B0BC /* Project object */;
+}
