@@ -133,6 +133,7 @@ private func converter(_ buffer: AVAudioPCMBuffer, _ conversor: AVAudioConverter
 @MainActor
 final class Gravador: ObservableObject {
     @Published private(set) var gravando = false
+    @Published private(set) var inicio: Date?
     @Published var erro: String?
     private var gravador: AVAudioRecorder?
     private var nome = ""
@@ -154,6 +155,7 @@ final class Gravador: ObservableObject {
             let g = try AVAudioRecorder(url: Arquivos.oracoes.appendingPathComponent(nome), settings: ajustes)
             g.record()
             gravador = g
+            inicio = Date()
             gravando = true
         } catch {
             erro = "Não deu pra gravar: \(error.localizedDescription)"
@@ -165,6 +167,7 @@ final class Gravador: ObservableObject {
         let duracao = g.currentTime
         g.stop()
         gravador = nil
+        inicio = nil
         gravando = false
         return Oracao(arquivo: nome, duracao: duracao)
     }

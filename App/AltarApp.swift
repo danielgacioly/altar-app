@@ -56,7 +56,13 @@ struct AltarApp: App {
                 .environmentObject(lembrete)
         }
         .defaultLaunchBehavior(UserDefaults.standard.bool(forKey: "abrirJanela") ? .presented : .suppressed)
-        .defaultSize(width: 920, height: 680)
+        .defaultSize(width: 1100, height: 760)
+        .commands {
+            CommandGroup(replacing: .appTermination) {
+                Button("Fechar janela") { NSApp.keyWindow?.close() }
+                    .keyboardShortcut("q")
+            }
+        }
     }
 
     private var nomeDoApp: String {

@@ -279,7 +279,7 @@ final class Lembrete: NSObject, ObservableObject, UNUserNotificationCenterDelega
     }
 
     private func hora(_ data: Date) -> String {
-        data.formatted(date: .omitted, time: .shortened)
+        horaTexto(data)
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {

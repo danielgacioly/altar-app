@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0CD782C244F69D96A4CFBC70 /* Planta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09551FC9E4BEBDA012275852 /* Planta.swift */; };
 		0E7A9684704550C5D89CA556 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E538987224E11FF3928B602 /* Config.swift */; };
 		1C75906AA81C62020288E9B9 /* Lembrete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */; };
 		294C4F3BC2E387257CFB4934 /* Arquivos.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */; };
@@ -14,24 +15,29 @@
 		4137656ADE6FE884913EA05B /* Historico.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232FBEE22B2FCF5778D4D550 /* Historico.swift */; };
 		5B21088EFF7E2426DEDAC152 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D44F83B5FE1B38D39523A95 /* Audio.swift */; };
 		685EDE16569B528CA6D519E0 /* JanelaPrincipal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */; };
+		7AB78614293C8C999D621318 /* Videira.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430ABF53F2153F541FC3E0C3 /* Videira.swift */; };
 		8191E6BCB4A2D3DC773B79EE /* versiculos.json in Resources */ = {isa = PBXBuildFile; fileRef = FA86F938F6FCC4704042D78B /* versiculos.json */; };
-		846BAA82FC8E4AF85FCA780A /* Versiculos.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19DFF09F3281DA08DF9EEBE /* Versiculos.swift */; };
 		87CA99ADE45E941AAF72E755 /* AltarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF49793A42FA212A4F9BC86 /* AltarApp.swift */; };
+		A3AD4133953273C743808166 /* GradeDoAno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60C07E67E0BA95F7F2FB49A6 /* GradeDoAno.swift */; };
 		CF9127EC943DC088C1E8A006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */; };
 		E522534E2EE6D08878A68F23 /* PaginaDoDia.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AE06C3E33F088642165239 /* PaginaDoDia.swift */; };
+		FBD25BEF4BADA5278520C9D3 /* Mensagens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1DC0609CC66747A7EDC4DA /* Mensagens.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		09551FC9E4BEBDA012275852 /* Planta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Planta.swift; sourceTree = "<group>"; };
 		0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lembrete.swift; sourceTree = "<group>"; };
 		0E538987224E11FF3928B602 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JanelaPrincipal.swift; sourceTree = "<group>"; };
+		1B1DC0609CC66747A7EDC4DA /* Mensagens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mensagens.swift; sourceTree = "<group>"; };
 		232FBEE22B2FCF5778D4D550 /* Historico.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Historico.swift; sourceTree = "<group>"; };
+		430ABF53F2153F541FC3E0C3 /* Videira.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Videira.swift; sourceTree = "<group>"; };
 		4D44F83B5FE1B38D39523A95 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		60C07E67E0BA95F7F2FB49A6 /* GradeDoAno.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeDoAno.swift; sourceTree = "<group>"; };
 		97F78B14321D457BE9A5F15B /* Altar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Altar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BF49793A42FA212A4F9BC86 /* AltarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltarApp.swift; sourceTree = "<group>"; };
 		A5AE06C3E33F088642165239 /* PaginaDoDia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginaDoDia.swift; sourceTree = "<group>"; };
 		B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C19DFF09F3281DA08DF9EEBE /* Versiculos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Versiculos.swift; sourceTree = "<group>"; };
 		CA27D74956EB707245440579 /* Ajustes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ajustes.swift; sourceTree = "<group>"; };
 		F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arquivos.swift; sourceTree = "<group>"; };
 		FA86F938F6FCC4704042D78B /* versiculos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = versiculos.json; sourceTree = "<group>"; };
@@ -56,11 +62,14 @@
 				B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */,
 				4D44F83B5FE1B38D39523A95 /* Audio.swift */,
 				0E538987224E11FF3928B602 /* Config.swift */,
+				60C07E67E0BA95F7F2FB49A6 /* GradeDoAno.swift */,
 				232FBEE22B2FCF5778D4D550 /* Historico.swift */,
 				0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */,
 				0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */,
+				1B1DC0609CC66747A7EDC4DA /* Mensagens.swift */,
 				A5AE06C3E33F088642165239 /* PaginaDoDia.swift */,
-				C19DFF09F3281DA08DF9EEBE /* Versiculos.swift */,
+				09551FC9E4BEBDA012275852 /* Planta.swift */,
+				430ABF53F2153F541FC3E0C3 /* Videira.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -149,11 +158,14 @@
 				294C4F3BC2E387257CFB4934 /* Arquivos.swift in Sources */,
 				5B21088EFF7E2426DEDAC152 /* Audio.swift in Sources */,
 				0E7A9684704550C5D89CA556 /* Config.swift in Sources */,
+				A3AD4133953273C743808166 /* GradeDoAno.swift in Sources */,
 				4137656ADE6FE884913EA05B /* Historico.swift in Sources */,
 				685EDE16569B528CA6D519E0 /* JanelaPrincipal.swift in Sources */,
 				1C75906AA81C62020288E9B9 /* Lembrete.swift in Sources */,
+				FBD25BEF4BADA5278520C9D3 /* Mensagens.swift in Sources */,
 				E522534E2EE6D08878A68F23 /* PaginaDoDia.swift in Sources */,
-				846BAA82FC8E4AF85FCA780A /* Versiculos.swift in Sources */,
+				0CD782C244F69D96A4CFBC70 /* Planta.swift in Sources */,
+				7AB78614293C8C999D621318 /* Videira.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,6 +232,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -240,6 +253,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;

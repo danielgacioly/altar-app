@@ -162,18 +162,30 @@ func dentro(_ m: Int, _ inicio: Int, _ fim: Int) -> Bool {
     inicio <= fim ? (m >= inicio && m < fim) : (m >= inicio || m < fim)
 }
 
-func chaveDoDia(_ data: Date) -> String {
+private let formatoDaChave: DateFormatter = {
     let f = DateFormatter()
     f.locale = Locale(identifier: "en_US_POSIX")
     f.dateFormat = "yyyy-MM-dd"
-    return f.string(from: data)
+    return f
+}()
+
+private let formatoDaHora: DateFormatter = {
+    let f = DateFormatter()
+    f.locale = Locale(identifier: "pt_BR")
+    f.dateFormat = "HH:mm"
+    return f
+}()
+
+func horaTexto(_ data: Date) -> String {
+    formatoDaHora.string(from: data)
+}
+
+func chaveDoDia(_ data: Date) -> String {
+    formatoDaChave.string(from: data)
 }
 
 func dataDaChave(_ chave: String) -> Date? {
-    let f = DateFormatter()
-    f.locale = Locale(identifier: "en_US_POSIX")
-    f.dateFormat = "yyyy-MM-dd"
-    return f.date(from: chave)
+    formatoDaChave.date(from: chave)
 }
 
 func textoHora(_ minutos: Int) -> String {

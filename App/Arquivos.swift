@@ -7,6 +7,10 @@ struct Versiculo: Codable, Identifiable, Hashable {
     var versao = "ARC"
 
     enum CodingKeys: String, CodingKey { case referencia, texto, versao }
+
+    var rodape: String {
+        [referencia, versao].filter { !$0.isEmpty }.joined(separator: " · ")
+    }
 }
 
 struct Nota: Codable, Identifiable, Hashable {
@@ -26,9 +30,30 @@ struct Dia: Codable, Identifiable {
     var id: String
     var versiculo: Versiculo?
     var feitoEm: Date?
+    var leitura = ""
     var texto = ""
     var notas: [Nota] = []
     var oracoes: [Oracao] = []
+
+    init(id: String, versiculo: Versiculo?) {
+        self.id = id
+        self.versiculo = versiculo
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        versiculo = try c.decodeIfPresent(Versiculo.self, forKey: .versiculo)
+        feitoEm = try c.decodeIfPresent(Date.self, forKey: .feitoEm)
+        leitura = try c.decodeIfPresent(String.self, forKey: .leitura) ?? ""
+        texto = try c.decodeIfPresent(String.self, forKey: .texto) ?? ""
+        notas = try c.decodeIfPresent([Nota].self, forKey: .notas) ?? []
+        oracoes = try c.decodeIfPresent([Oracao].self, forKey: .oracoes) ?? []
+    }
+
+    var temConteudo: Bool {
+        !leitura.isEmpty || !texto.isEmpty || !notas.isEmpty || !oracoes.isEmpty
+    }
 }
 
 struct Estado: Codable {
@@ -165,6 +190,42 @@ final class Loja: ObservableObject {
         guard !versiculos.isEmpty else { return nil }
         let n = chave.unicodeScalars.reduce(0) { $0 &* 31 &+ Int($1.value) }
         return versiculos[abs(n) % versiculos.count]
+    }
+
+    var feitos: Set<String> {
+        Set(dias.values.filter { $0.feitoEm != nil }.map(\.id))
+    }
+
+    func sequenciaAtual(hoje: String) -> Int {
+        let f = feitos
+        let cal = Calendar.current
+        guard var data = dataDaChave(hoje) else { return 0 }
+        if !f.contains(hoje) {
+            data = cal.date(byAdding: .day, value: -1, to: data) ?? data
+        }
+        var n = 0
+        while f.contains(chaveDoDia(data)) {
+            n += 1
+            data = cal.date(byAdding: .day, value: -1, to: data) ?? data
+        }
+        return n
+    }
+
+    var maiorSequencia: Int {
+        let cal = Calendar.current
+        var maior = 0
+        var atual = 0
+        var anterior: Date?
+        for d in feitos.compactMap(dataDaChave).sorted() {
+            if let a = anterior, cal.dateComponents([.day], from: a, to: d).day == 1 {
+                atual += 1
+            } else {
+                atual = 1
+            }
+            maior = max(maior, atual)
+            anterior = d
+        }
+        return maior
     }
 
     func urlDaOracao(_ o: Oracao) -> URL {
