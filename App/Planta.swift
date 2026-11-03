@@ -71,6 +71,7 @@ struct DesenhoDaPlanta: View {
     var animado = true
     var crescerDesde: Date?
     var sacudidaDesde: Date?
+    var instante: Date?
 
     static func duracao(_ estagio: Double) -> Double {
         0.5 + min(1, estagio / 30) * 2.3
@@ -85,7 +86,7 @@ struct DesenhoDaPlanta: View {
             }
         } else {
             Canvas { ctx, tamanho in
-                desenhar(&ctx, tamanho, nil)
+                desenhar(&ctx, tamanho, instante)
             }
         }
     }
@@ -120,14 +121,19 @@ struct DesenhoDaPlanta: View {
 
         let crescida = 1 - pow(1 - p, 2)
         let altura = m * 0.05 * broto + (m * forma.altura - m * 0.05) * crescida
-        var vento = sin(t * 1.3) * (0.035 + 0.025 * p) + sin(t * 2.3 + 1) * 0.008
+        var vento = sin(t * 1.3) * (0.022 + 0.016 * p) + sin(t * 2.3 + 1) * 0.005
         if let sacudidaDesde, let agora {
             let q = agora.timeIntervalSince(sacudidaDesde)
-            if q >= 0 && q < 0.9 { vento += sin(q * 30) * (1 - q / 0.9) * 0.06 }
+            if q >= 0 && q < 1.4 { vento += sin(q * 9) * (1 - q / 1.4) * 0.045 }
         }
         let curva = forma == .palmeira ? m * 0.05 * p : 0
-        let topo = CGPoint(x: cx + vento * altura + curva, y: base.y - altura)
-        let meio = CGPoint(x: cx + vento * altura * 0.3 + curva * 1.4, y: base.y - altura * 0.5)
+        let topo = CGPoint(x: cx + curva + sin(vento) * altura, y: base.y - cos(vento) * altura)
+        let meio = CGPoint(x: cx + curva * 1.4 + sin(vento) * altura * 0.12, y: base.y - altura * 0.5)
+        let giro = atan2(topo.x - meio.x, meio.y - topo.y) - atan2(-curva * 0.4, altura * 0.5)
+        func girar(_ q: CGPoint) -> CGPoint {
+            let dx = q.x - topo.x, dy = q.y - topo.y
+            return CGPoint(x: topo.x + dx * cos(giro) - dy * sin(giro), y: topo.y + dx * sin(giro) + dy * cos(giro))
+        }
         func ponto(_ u: Double) -> CGPoint {
             let a = (1 - u) * (1 - u), b = 2 * (1 - u) * u, c = u * u
             return CGPoint(x: a * base.x + b * meio.x + c * topo.x, y: a * base.y + b * meio.y + c * topo.y)
@@ -147,38 +153,39 @@ struct DesenhoDaPlanta: View {
             for (u, x, y) in pontas {
                 let inicio = ponto(u)
                 let fim = CGPoint(x: topo.x + x * raio * 1.1, y: topo.y + y * raio)
-                galho(&ctx, de: inicio, para: fim, cor: madeira, largura: grossura * 0.6)
+                galho(&ctx, de: inicio, para: girar(fim), cor: madeira, largura: grossura * 0.6)
                 galhos.append(fim)
             }
         case .guardaChuva:
             for x: CGFloat in [-0.95, 0.95] {
                 let inicio = ponto(0.6)
                 let fim = CGPoint(x: topo.x + x * raio, y: topo.y + raio * 0.15)
-                galho(&ctx, de: inicio, para: fim, cor: madeira, largura: grossura * 0.65)
+                galho(&ctx, de: inicio, para: girar(fim), cor: madeira, largura: grossura * 0.65)
             }
         case .candelabro:
             let bracos: [(Double, CGFloat, CGFloat, CGFloat)] = [(0.6, -1, 1.25, 0.2), (0.6, 1, 1.25, 0.2), (0.73, -1, 0.95, -0.12), (0.73, 1, 0.95, -0.12), (0.86, -1, 0.6, -0.42), (0.86, 1, 0.6, -0.42)]
             for (u, lado, dx, dy) in bracos {
                 let inicio = ponto(u)
-                let fim = CGPoint(x: topo.x + lado * dx * raio, y: topo.y + dy * raio)
+                let alvo = CGPoint(x: topo.x + lado * dx * raio, y: topo.y + dy * raio)
+                let fim = girar(alvo)
                 var g = Path()
                 g.move(to: inicio)
                 g.addQuadCurve(to: fim, control: CGPoint(x: fim.x - lado * raio * 0.1, y: inicio.y))
                 ctx.stroke(g, with: .color(madeira), style: StrokeStyle(lineWidth: grossura * 0.45, lineCap: .round))
-                galhos.append(fim)
+                galhos.append(alvo)
             }
         case .redonda, .oval:
             for (i, x) in [-0.7, 0.65].enumerated() {
                 let inicio = ponto(0.55 + 0.1 * Double(i))
                 let fim = CGPoint(x: topo.x + x * raio, y: topo.y + raio * 0.1)
-                galho(&ctx, de: inicio, para: fim, cor: madeira, largura: grossura * 0.55)
+                galho(&ctx, de: inicio, para: girar(fim), cor: madeira, largura: grossura * 0.55)
             }
         case .camadas:
             for i in 0..<3 {
                 let lado: CGFloat = i % 2 == 0 ? -1 : 1
                 let y = topo.y + raio * (1.86 - 0.62 * CGFloat(i))
                 let inicio = ponto(min(0.95, max(0.3, Double((base.y - y) / max(1, altura)))))
-                galho(&ctx, de: inicio, para: CGPoint(x: topo.x + lado * raio * (1.3 - 0.25 * CGFloat(i)), y: y), cor: madeira, largura: grossura * 0.55)
+                galho(&ctx, de: inicio, para: girar(CGPoint(x: topo.x + lado * raio * (1.3 - 0.25 * CGFloat(i)), y: y)), cor: madeira, largura: grossura * 0.55)
             }
         default:
             break
@@ -220,33 +227,36 @@ struct DesenhoDaPlanta: View {
         }
 
         guard raio > 0.5 else { return }
-        let mexe = sin(t * 1.4) * raio * 0.03
-        let centro = CGPoint(x: topo.x + mexe, y: topo.y + raio * 0.3)
+        let centro = CGPoint(x: topo.x, y: topo.y + raio * 0.3)
+        var copa = ctx
+        copa.translateBy(x: topo.x, y: topo.y)
+        copa.rotate(by: .radians(giro))
+        copa.translateBy(x: -topo.x, y: -topo.y)
 
         switch forma {
         case .redonda:
-            nuvem(&ctx, [(0, 0, 1), (-0.75, 0.25, 0.75), (0.75, 0.25, 0.75), (-0.45, -0.45, 0.72), (0.45, -0.45, 0.72), (0, -0.62, 0.6), (-1.05, 0.5, 0.5), (1.05, 0.5, 0.5), (0, 0.55, 0.7)], centro: centro, raio: raio, t: t)
+            nuvem(&copa, [(0, 0, 1), (-0.75, 0.25, 0.75), (0.75, 0.25, 0.75), (-0.45, -0.45, 0.72), (0.45, -0.45, 0.72), (0, -0.62, 0.6), (-1.05, 0.5, 0.5), (1.05, 0.5, 0.5), (0, 0.55, 0.7)], centro: centro, raio: raio, t: t)
         case .oval:
-            nuvem(&ctx, [(0, 0.8, 0.55), (0, 0.2, 0.85), (-0.5, 0.5, 0.6), (0.5, 0.5, 0.6), (-0.45, -0.25, 0.65), (0.45, -0.25, 0.65), (0, -0.7, 0.7), (-0.3, -1.15, 0.5), (0.3, -1.15, 0.5), (0, -1.45, 0.45)], centro: CGPoint(x: centro.x, y: topo.y + raio * 0.2), raio: raio, t: t)
+            nuvem(&copa, [(0, 0.8, 0.55), (0, 0.2, 0.85), (-0.5, 0.5, 0.6), (0.5, 0.5, 0.6), (-0.45, -0.25, 0.65), (0.45, -0.25, 0.65), (0, -0.7, 0.7), (-0.3, -1.15, 0.5), (0.3, -1.15, 0.5), (0, -1.45, 0.45)], centro: CGPoint(x: centro.x, y: topo.y + raio * 0.2), raio: raio, t: t)
         case .coluna:
-            nuvem(&ctx, [(0, 0.9, 0.55), (0.2, 0.6, 0.45), (-0.15, 0.35, 0.6), (0.15, -0.2, 0.58), (-0.2, -0.5, 0.45), (-0.12, -0.75, 0.55), (0.1, -1.3, 0.5), (-0.05, -1.8, 0.42), (0, -2.2, 0.32)], centro: CGPoint(x: centro.x, y: topo.y + raio * 0.5), raio: raio, t: t)
+            nuvem(&copa, [(0, 0.9, 0.55), (0.2, 0.6, 0.45), (-0.15, 0.35, 0.6), (0.15, -0.2, 0.58), (-0.2, -0.5, 0.45), (-0.12, -0.75, 0.55), (0.1, -1.3, 0.5), (-0.05, -1.8, 0.42), (0, -2.2, 0.32)], centro: CGPoint(x: centro.x, y: topo.y + raio * 0.5), raio: raio, t: t)
         case .nuvens:
             let tufo: [(Double, Double, Double)] = [(0, 0.2, 0.75), (-0.7, 0.25, 0.7), (0.7, 0.25, 0.7), (-0.35, -0.3, 0.75), (0.35, -0.3, 0.75), (0, -0.55, 0.6)]
             for ponta in galhos + [CGPoint(x: topo.x, y: topo.y - raio * 0.2)] {
-                nuvem(&ctx, tufo, centro: CGPoint(x: ponta.x + mexe, y: ponta.y), raio: raio * 0.55, t: t)
+                nuvem(&copa, tufo, centro: CGPoint(x: ponta.x, y: ponta.y), raio: raio * 0.55, t: t)
             }
         case .guardaChuva:
-            nuvem(&ctx, [(-1.45, 0.25, 0.42), (1.45, 0.25, 0.42), (-1.1, -0.1, 0.48), (1.1, -0.1, 0.48), (-0.75, 0.15, 0.55), (0.75, 0.15, 0.55), (0, 0.05, 0.7), (-0.4, -0.3, 0.55), (0.4, -0.3, 0.55), (0, -0.42, 0.45)], centro: CGPoint(x: centro.x, y: topo.y), raio: raio, t: t, achatar: 0.68)
+            nuvem(&copa, [(-1.45, 0.25, 0.42), (1.45, 0.25, 0.42), (-1.1, -0.1, 0.48), (1.1, -0.1, 0.48), (-0.75, 0.15, 0.55), (0.75, 0.15, 0.55), (0, 0.05, 0.7), (-0.4, -0.3, 0.55), (0.4, -0.3, 0.55), (0, -0.42, 0.45)], centro: CGPoint(x: centro.x, y: topo.y), raio: raio, t: t, achatar: 0.68)
         case .cone:
-            pinheiro(&ctx, topo: CGPoint(x: topo.x + mexe, y: topo.y), raio: raio, t: t)
+            pinheiro(&copa, topo: CGPoint(x: topo.x, y: topo.y), raio: raio, t: t)
         case .camadas:
-            cedro(&ctx, topo: CGPoint(x: topo.x + mexe, y: topo.y), raio: raio, t: t)
+            cedro(&copa, topo: CGPoint(x: topo.x, y: topo.y), raio: raio, t: t)
         case .candelabro:
             for ponta in galhos + [CGPoint(x: topo.x, y: topo.y - raio * 0.15)] {
-                tufo(&ctx, em: CGPoint(x: ponta.x + mexe, y: ponta.y), raio: raio)
+                tufo(&copa, em: CGPoint(x: ponta.x, y: ponta.y), raio: raio)
             }
         case .palmeira:
-            palmeira(&ctx, topo: topo, raio: raio, m: m, t: t)
+            palmeira(&copa, topo: topo, raio: raio, m: m, t: t)
         }
 
     }
@@ -263,14 +273,14 @@ struct DesenhoDaPlanta: View {
         for (camada, cor) in [(0.12, fundo), (0.0, arvore.copa)] {
             for (i, b) in bolhas.enumerated() {
                 let r = raio * b.2
-                let mexe = sin(t * 1.4 + Double(i)) * raio * 0.025
+                let mexe = sin(t * 1.4 + Double(i)) * raio * 0.01
                 let c = CGPoint(x: centro.x + b.0 * raio + mexe, y: centro.y + (b.1 + camada) * raio * achatar)
                 ctx.fill(Path(ellipseIn: CGRect(x: c.x - r, y: c.y - r * achatar, width: r * 2, height: r * 2 * achatar)), with: .color(cor))
             }
         }
         for (i, b) in bolhas.enumerated() where b.1 < 0.3 {
             let r = raio * b.2 * 0.32
-            let c = CGPoint(x: centro.x + b.0 * raio - r * 0.7 + sin(t * 1.4 + Double(i)) * raio * 0.025, y: centro.y + b.1 * raio * achatar - r * 1.2 * achatar)
+            let c = CGPoint(x: centro.x + b.0 * raio - r * 0.7 + sin(t * 1.4 + Double(i)) * raio * 0.01, y: centro.y + b.1 * raio * achatar - r * 1.2 * achatar)
             ctx.fill(Path(ellipseIn: CGRect(x: c.x - r, y: c.y - r * 0.8, width: r * 2, height: r * 1.6)), with: .color(.white.opacity(0.16)))
         }
     }
@@ -280,14 +290,54 @@ struct DesenhoDaPlanta: View {
             let largura = raio * (1.15 - 0.22 * CGFloat(i))
             let base = topo.y + raio * (1.55 - 0.6 * CGFloat(i))
             let alto = raio * 0.95
-            let mexe = sin(t * 1.2 + Double(i) * 0.4) * raio * 0.03
             for (deslocamento, cor) in [(raio * 0.08, arvore.copa.mix(with: .black, by: 0.3)), (0, arvore.copa)] {
                 var tri = Path()
-                tri.move(to: CGPoint(x: topo.x - largura + mexe, y: base + deslocamento))
-                tri.addQuadCurve(to: CGPoint(x: topo.x + largura + mexe, y: base + deslocamento), control: CGPoint(x: topo.x + mexe, y: base + deslocamento + raio * 0.18))
-                tri.addLine(to: CGPoint(x: topo.x + mexe * 1.5, y: base - alto + deslocamento))
+                tri.move(to: CGPoint(x: topo.x - largura, y: base + deslocamento))
+                tri.addQuadCurve(to: CGPoint(x: topo.x + largura, y: base + deslocamento), control: CGPoint(x: topo.x, y: base + deslocamento + raio * 0.18))
+                tri.addLine(to: CGPoint(x: topo.x, y: base - alto + deslocamento))
                 tri.closeSubpath()
                 ctx.fill(tri, with: .color(cor))
+            }
+            let neve = Color(red: 0.97, green: 0.98, blue: 1)
+            let sombra = Color(red: 0.78, green: 0.86, blue: 0.95)
+            let esquerda = CGPoint(x: topo.x - largura, y: base)
+            let direita = CGPoint(x: topo.x + largura, y: base)
+            let curva = CGPoint(x: topo.x, y: base + raio * 0.18)
+            func naBase(_ u: CGFloat) -> CGPoint {
+                CGPoint(x: (1 - u) * (1 - u) * esquerda.x + 2 * (1 - u) * u * curva.x + u * u * direita.x,
+                        y: (1 - u) * (1 - u) * esquerda.y + 2 * (1 - u) * u * curva.y + u * u * direita.y)
+            }
+            let passos = 24
+            var manto = Path()
+            for k in 0...passos {
+                let u = 0.03 + 0.94 * CGFloat(k) / CGFloat(passos)
+                let p = naBase(u)
+                let ponta = min(u, 1 - u) * 6
+                let onda = raio * (0.07 + 0.02 * sin(Double(u) * .pi * 9 + Double(i))) * min(1, ponta)
+                let q = CGPoint(x: p.x, y: p.y - onda - raio * 0.01)
+                if k == 0 { manto.move(to: q) } else { manto.addLine(to: q) }
+            }
+            for k in stride(from: passos, through: 0, by: -1) {
+                let u = 0.03 + 0.94 * CGFloat(k) / CGFloat(passos)
+                let p = naBase(u)
+                let pingo = (k % 6 == 3) ? raio * 0.05 : 0
+                manto.addLine(to: CGPoint(x: p.x, y: p.y + raio * 0.012 + pingo))
+            }
+            manto.closeSubpath()
+            ctx.fill(manto.offsetBy(dx: 0, dy: raio * 0.025), with: .color(sombra))
+            ctx.fill(manto, with: .linearGradient(Gradient(colors: [neve, neve, sombra.mix(with: neve, by: 0.5)]), startPoint: CGPoint(x: topo.x, y: base - raio * 0.08), endPoint: CGPoint(x: topo.x, y: base + raio * 0.18)))
+            if i == 3 {
+                let ponta = CGPoint(x: topo.x, y: base - alto)
+                let a = CGPoint(x: ponta.x + (esquerda.x - ponta.x) * 0.34, y: ponta.y + (esquerda.y - ponta.y) * 0.34)
+                let b = CGPoint(x: ponta.x + (direita.x - ponta.x) * 0.34, y: ponta.y + (direita.y - ponta.y) * 0.34)
+                let meio = CGPoint(x: (a.x + b.x) / 2, y: a.y + raio * 0.02)
+                var capa = Path()
+                capa.move(to: ponta)
+                capa.addLine(to: a)
+                capa.addQuadCurve(to: meio, control: CGPoint(x: (a.x + meio.x) / 2, y: a.y + raio * 0.12))
+                capa.addQuadCurve(to: b, control: CGPoint(x: (meio.x + b.x) / 2, y: b.y + raio * 0.12))
+                capa.closeSubpath()
+                ctx.fill(capa, with: .linearGradient(Gradient(colors: [neve, sombra]), startPoint: ponta, endPoint: CGPoint(x: b.x, y: b.y + raio * 0.1)))
             }
         }
     }
@@ -297,16 +347,15 @@ struct DesenhoDaPlanta: View {
             let y = topo.y + raio * (1.86 - 0.62 * CGFloat(i))
             let largura = raio * (1.45 - 0.3 * CGFloat(i))
             let espessura = raio * (0.3 - 0.03 * CGFloat(i))
-            let mexe = sin(t * 1.3 + Double(i)) * raio * 0.035
             for (deslocamento, cor) in [(espessura * 0.35, arvore.copa.mix(with: .black, by: 0.3)), (0, arvore.copa)] {
                 for (x, escala) in [(-0.55, 0.6), (0.55, 0.6), (0.0, 0.75)] as [(CGFloat, CGFloat)] {
                     let w = largura * escala
-                    let c = CGPoint(x: topo.x + x * largura + mexe, y: y + deslocamento)
+                    let c = CGPoint(x: topo.x + x * largura, y: y + deslocamento)
                     ctx.fill(Path(ellipseIn: CGRect(x: c.x - w, y: c.y - espessura, width: w * 2, height: espessura * 2)), with: .color(cor))
                 }
             }
             let r = espessura * 0.5
-            ctx.fill(Path(ellipseIn: CGRect(x: topo.x - largura * 0.4 + mexe, y: y - espessura * 0.9, width: largura * 0.5, height: r)), with: .color(.white.opacity(0.14)))
+            ctx.fill(Path(ellipseIn: CGRect(x: topo.x - largura * 0.4, y: y - espessura * 0.9, width: largura * 0.5, height: r)), with: .color(.white.opacity(0.14)))
         }
     }
 
@@ -411,7 +460,9 @@ struct DesenhoDaPlanta: View {
         ctx.fill(Path(ellipseIn: CGRect(x: p.x - w * 0.45, y: p.y - h * 1.5, width: w * 0.5, height: h * 0.5)), with: .color(.white.opacity(0.14)))
     }
 
-    private func rosto(_ ctx: inout GraphicsContext, cx: CGFloat, olhoY: CGFloat, m: CGFloat, t: Double) {
+    private func rosto(_ ctx: inout GraphicsContext, cx: CGFloat, olhoY base: CGFloat, m: CGFloat, t: Double) {
+        let vivo = arvore.rosto.1 == .lingua
+        let olhoY = base + (vivo ? sin(t * 2.4) * m * 0.005 : 0)
         let tinta = Color.black.opacity(0.75)
         let linha = StrokeStyle(lineWidth: max(1, m * 0.006), lineCap: .round)
         let piscando = t.truncatingRemainder(dividingBy: 4.2) > 4.07
@@ -424,7 +475,10 @@ struct DesenhoDaPlanta: View {
         for lado: CGFloat in [-1, 1] {
             let x = cx + lado * m * 0.045
             var olho = arvore.rosto.0
-            if olho == .piscadinha { olho = lado < 0 ? .brilho : .felizes }
+            if olho == .piscadinha {
+                let piscadela = vivo ? t.truncatingRemainder(dividingBy: 3.4) > 2.6 : true
+                olho = lado < 0 || !piscadela ? .brilho : .felizes
+            }
             let aberto = olho == .brilho || olho == .pontos || olho == .grandes
             if piscando && aberto {
                 arco(x, m * 0.003)
@@ -476,7 +530,9 @@ struct DesenhoDaPlanta: View {
             b.addQuadCurve(to: CGPoint(x: cx + m * 0.02, y: y + m * 0.003), control: CGPoint(x: cx + m * 0.01, y: y + m * 0.02))
             ctx.stroke(b, with: .color(tinta), style: linha)
         case .lingua:
-            ctx.fill(Path(roundedRect: CGRect(x: cx + m * 0.001, y: y + m * 0.008, width: m * 0.014, height: m * 0.017), cornerRadius: m * 0.007), with: .color(rosa))
+            let balanco = vivo ? sin(t * 7) * m * 0.004 : 0
+            let comprimento = m * (0.017 + (vivo ? 0.005 * abs(sin(t * 3.5)) : 0))
+            ctx.fill(Path(roundedRect: CGRect(x: cx + m * 0.001 + balanco, y: y + m * 0.008, width: m * 0.014, height: comprimento), cornerRadius: m * 0.007), with: .color(rosa))
             var b = Path()
             b.move(to: CGPoint(x: cx - m * 0.02, y: y))
             b.addQuadCurve(to: CGPoint(x: cx + m * 0.02, y: y), control: CGPoint(x: cx, y: y + m * 0.022))
