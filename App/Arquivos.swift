@@ -247,35 +247,11 @@ final class Loja: ObservableObject {
     }
 
     func sequenciaAtual(hoje: String) -> Int {
-        let f = feitos
-        let cal = Calendar.current
-        guard var data = dataDaChave(hoje) else { return 0 }
-        if !f.contains(hoje) {
-            data = cal.date(byAdding: .day, value: -1, to: data) ?? data
-        }
-        var n = 0
-        while f.contains(chaveDoDia(data)) {
-            n += 1
-            data = cal.date(byAdding: .day, value: -1, to: data) ?? data
-        }
-        return n
+        contarSequencia(feitos, ate: hoje)
     }
 
     var maiorSequencia: Int {
-        let cal = Calendar.current
-        var maior = 0
-        var atual = 0
-        var anterior: Date?
-        for d in feitos.compactMap(dataDaChave).sorted() {
-            if let a = anterior, cal.dateComponents([.day], from: a, to: d).day == 1 {
-                atual += 1
-            } else {
-                atual = 1
-            }
-            maior = max(maior, atual)
-            anterior = d
-        }
-        return maior
+        contarMaiorSequencia(feitos)
     }
 
     func mudarFoto(_ url: URL) {

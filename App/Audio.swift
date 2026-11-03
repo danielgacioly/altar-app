@@ -82,6 +82,7 @@ final class Ditado: ObservableObject {
             let natural = motor.inputNode.outputFormat(forBus: 0)
             guard let conversor = AVAudioConverter(from: natural, to: formato) else {
                 erro = "Formato de áudio do microfone não suportado."
+                await desfazer()
                 return
             }
             motor.inputNode.installTap(onBus: 0, bufferSize: 4096, format: natural) { buffer, _ in
@@ -94,7 +95,17 @@ final class Ditado: ObservableObject {
             gravando = true
         } catch {
             erro = "Erro no ditado: \(error.localizedDescription)"
+            await desfazer()
         }
+    }
+
+    private func desfazer() async {
+        entrada?.finish()
+        entrada = nil
+        try? await analisador?.finalizeAndFinishThroughEndOfInput()
+        leitura?.cancel()
+        analisador = nil
+        leitura = nil
     }
 
     func parar() async {
@@ -153,7 +164,10 @@ final class Gravador: ObservableObject {
         ]
         do {
             let g = try AVAudioRecorder(url: Arquivos.oracoes.appendingPathComponent(nome), settings: ajustes)
-            g.record()
+            guard g.record() else {
+                erro = "Não deu pra começar a gravação."
+                return
+            }
             gravador = g
             inicio = Date()
             gravando = true

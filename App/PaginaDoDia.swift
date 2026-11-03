@@ -75,7 +75,10 @@ struct PaginaDoDia: View {
                 .animation(.spring(duration: 0.45, bounce: 0.28), value: captura)
         }
         .navigationTitle(ehHoje ? "Hoje" : tituloDoDia(chave))
-        .onDisappear { tocador.parar() }
+        .onDisappear {
+            tocador.parar()
+            encerrarCapturas()
+        }
         .sensoryFeedback(.levelChange, trigger: celebrar)
     }
 
@@ -463,6 +466,25 @@ struct PaginaDoDia: View {
         } else {
             tocador.parar()
             Task { await gravador.iniciar() }
+        }
+    }
+
+    private func encerrarCapturas() {
+        if gravador.gravando {
+            alternarGravacao()
+        }
+        if ditadoTexto.gravando {
+            alternarDitadoTexto()
+        }
+        if ditado.gravando {
+            let chave = chave
+            Task {
+                await ditado.parar()
+                let t = ditado.texto
+                if !t.isEmpty {
+                    loja.mudar(chave) { $0.notas.append(Nota(texto: t)) }
+                }
+            }
         }
     }
 

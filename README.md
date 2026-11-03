@@ -83,3 +83,12 @@ Para testar os lembretes sem esperar, abra o app com o tempo acelerado (cada "mi
 ```bash
 open build/Build/Products/Debug/Altar.app --args -segundosPorMinuto 2
 ```
+
+## Desenvolvimento
+
+- O trabalho do dia a dia acontece na branch `develop`. Quando uma leva está pronta, ela vai para a `main`.
+- A `main` é o que está publicado: o site sai da pasta `docs/` dela, pelo GitHub Pages, e os releases são criados a partir dela.
+- O projeto do Xcode é gerado pelo [XcodeGen](https://github.com/yonaskolb/XcodeGen) a partir do `project.yml`. Depois de mudar o `project.yml`, rode `xcodegen`.
+- Testes: `xcodebuild -project Altar.xcodeproj -scheme Altar -derivedDataPath build test`. Eles cobrem horários, faixas, virada do dia, botões extras, sequência de dias, leitura dos arquivos e as plantas, e rodam sem abrir o app nem tocar nos seus dados.
+- A cada envio para `develop` ou `main`, o GitHub Actions roda os testes e um build de release.
+

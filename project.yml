@@ -10,6 +10,9 @@ targets:
   Altar:
     type: application
     platform: macOS
+    scheme:
+      testTargets:
+        - AltarTests
     sources:
       - App
       - path: versiculos.json
@@ -18,6 +21,8 @@ targets:
       path: Info.plist
       properties:
         LSUIElement: true
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.lifestyle
         NSMicrophoneUsageDescription: O Altar usa o microfone para ditar notas e gravar orações.
         NSSpeechRecognitionUsageDescription: O Altar transcreve no próprio Mac as notas ditadas e as orações gravadas.
@@ -29,5 +34,20 @@ targets:
         CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Manual
         ENABLE_HARDENED_RUNTIME: NO
-        MARKETING_VERSION: "0.1"
+        MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
+  AltarTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests
+      - App/Config.swift
+      - App/Arquivos.swift
+      - App/Sequencia.swift
+      - App/Planta.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.danielacioly.altar.tests
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        GENERATE_INFOPLIST_FILE: YES

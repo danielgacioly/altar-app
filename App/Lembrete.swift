@@ -43,16 +43,14 @@ final class Lembrete: NSObject, ObservableObject, UNUserNotificationCenterDelega
 
     private var config: Config { loja.config }
 
-    var hoje: String { config.diaLogico(Date()) }
-
     var status: String {
         let agora = Date()
         if let feito = estado.feitoEm {
-            return "Devocional feito às \(hora(feito))"
+            return "Devocional feito às \(horaTexto(feito))"
         }
         if estado.pausado { return "Lembretes pausados" }
         if config.silencioso(agora) { return "Sem lembretes até as \(textoHora(config.fimSilencio))" }
-        if let ate = estado.silencioAte, ate > agora { return "Silenciado até \(hora(ate))" }
+        if let ate = estado.silencioAte, ate > agora { return "Silenciado até \(horaTexto(ate))" }
         if estado.aguardando != nil { return "Esperando sua resposta" }
         let faltam = max(0, Int(((alvo - estado.segundosAtivos) / minuto).rounded(.up)))
         return "Próximo lembrete em \(faltam) min de uso"
@@ -291,10 +289,6 @@ final class Lembrete: NSObject, ObservableObject, UNUserNotificationCenterDelega
 
     private func salvar() {
         Arquivos.gravar(estado, em: Arquivos.estadoURL)
-    }
-
-    private func hora(_ data: Date) -> String {
-        horaTexto(data)
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {

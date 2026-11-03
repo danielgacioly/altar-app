@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  testes:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Testes
+        run: xcodebuild -project Altar.xcodeproj -scheme Altar -derivedDataPath build test
+      - name: Build de release
+        run: xcodebuild -project Altar.xcodeproj -scheme Altar -configuration Release -derivedDataPath build build

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0CD782C244F69D96A4CFBC70 /* Planta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09551FC9E4BEBDA012275852 /* Planta.swift */; };
+		0DE4E7A74D84D9D4B535F03E /* Planta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09551FC9E4BEBDA012275852 /* Planta.swift */; };
 		0E7A9684704550C5D89CA556 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E538987224E11FF3928B602 /* Config.swift */; };
 		1C75906AA81C62020288E9B9 /* Lembrete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D1EA7BBCB81CA5641E8AB85 /* Lembrete.swift */; };
 		294C4F3BC2E387257CFB4934 /* Arquivos.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */; };
@@ -15,13 +16,18 @@
 		4137656ADE6FE884913EA05B /* Historico.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232FBEE22B2FCF5778D4D550 /* Historico.swift */; };
 		5B21088EFF7E2426DEDAC152 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D44F83B5FE1B38D39523A95 /* Audio.swift */; };
 		685EDE16569B528CA6D519E0 /* JanelaPrincipal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */; };
+		7396B61102BE3A074093DE0B /* Sequencia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD938A3057590B45D06BC62 /* Sequencia.swift */; };
 		8191E6BCB4A2D3DC773B79EE /* versiculos.json in Resources */ = {isa = PBXBuildFile; fileRef = FA86F938F6FCC4704042D78B /* versiculos.json */; };
 		87CA99ADE45E941AAF72E755 /* AltarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF49793A42FA212A4F9BC86 /* AltarApp.swift */; };
+		966B99AF61F24AC3A873595C /* Arquivos.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFC5209A47E744E2F7AB9 /* Arquivos.swift */; };
 		996F69FAEC9B15CF54E06839 /* Conta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0845D0307E5A1D59B1958625 /* Conta.swift */; };
 		A3AD4133953273C743808166 /* GradeDoAno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60C07E67E0BA95F7F2FB49A6 /* GradeDoAno.swift */; };
 		AC1ACBAD80D8AA5E7502A879 /* Plantas.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8ECE0ECCCF4EB699F416683 /* Plantas.swift */; };
 		CF9127EC943DC088C1E8A006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B11AE1C23E58FBEBC8DC85E9 /* Assets.xcassets */; };
+		D6AAE7815A06420C7B3B2088 /* AltarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48560C2CDE43F9636F141336 /* AltarTests.swift */; };
+		E3EB6130AEC4CE237FA0E8FF /* Sequencia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD938A3057590B45D06BC62 /* Sequencia.swift */; };
 		E522534E2EE6D08878A68F23 /* PaginaDoDia.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AE06C3E33F088642165239 /* PaginaDoDia.swift */; };
+		EE2A65AADDA81EA26A5DD9C2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E538987224E11FF3928B602 /* Config.swift */; };
 		FBD25BEF4BADA5278520C9D3 /* Mensagens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1DC0609CC66747A7EDC4DA /* Mensagens.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,8 +39,11 @@
 		0F69BE24D1504BC8265A4C5E /* JanelaPrincipal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JanelaPrincipal.swift; sourceTree = "<group>"; };
 		1B1DC0609CC66747A7EDC4DA /* Mensagens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mensagens.swift; sourceTree = "<group>"; };
 		232FBEE22B2FCF5778D4D550 /* Historico.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Historico.swift; sourceTree = "<group>"; };
+		48560C2CDE43F9636F141336 /* AltarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltarTests.swift; sourceTree = "<group>"; };
 		4D44F83B5FE1B38D39523A95 /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
 		60C07E67E0BA95F7F2FB49A6 /* GradeDoAno.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradeDoAno.swift; sourceTree = "<group>"; };
+		6DAC42FD26A00116CE914913 /* AltarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AltarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BD938A3057590B45D06BC62 /* Sequencia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequencia.swift; sourceTree = "<group>"; };
 		97F78B14321D457BE9A5F15B /* Altar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Altar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BF49793A42FA212A4F9BC86 /* AltarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltarApp.swift; sourceTree = "<group>"; };
 		A5AE06C3E33F088642165239 /* PaginaDoDia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginaDoDia.swift; sourceTree = "<group>"; };
@@ -51,8 +60,17 @@
 			children = (
 				FA86F938F6FCC4704042D78B /* versiculos.json */,
 				64F08A56949FB0CE08812EF9 /* App */,
+				433398B00B1175E1E19A1123 /* Tests */,
 				90CEE8C763826A4668A097AE /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		433398B00B1175E1E19A1123 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				48560C2CDE43F9636F141336 /* AltarTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		64F08A56949FB0CE08812EF9 /* App */ = {
@@ -73,6 +91,7 @@
 				A5AE06C3E33F088642165239 /* PaginaDoDia.swift */,
 				09551FC9E4BEBDA012275852 /* Planta.swift */,
 				D8ECE0ECCCF4EB699F416683 /* Plantas.swift */,
+				7BD938A3057590B45D06BC62 /* Sequencia.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -81,6 +100,7 @@
 			isa = PBXGroup;
 			children = (
 				97F78B14321D457BE9A5F15B /* Altar.app */,
+				6DAC42FD26A00116CE914913 /* AltarTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,6 +126,23 @@
 			productReference = 97F78B14321D457BE9A5F15B /* Altar.app */;
 			productType = "com.apple.product-type.application";
 		};
+		5315550502A7FA57E1668961 /* AltarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B88F5184322AC24DE6DBA2E5 /* Build configuration list for PBXNativeTarget "AltarTests" */;
+			buildPhases = (
+				21C7E2831AA1282B1F949AEA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AltarTests;
+			packageProductDependencies = (
+			);
+			productName = AltarTests;
+			productReference = 6DAC42FD26A00116CE914913 /* AltarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -116,6 +153,9 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					263DCAD1FDBA7D2C80C46955 = {
+						ProvisioningStyle = Manual;
+					};
+					5315550502A7FA57E1668961 = {
 						ProvisioningStyle = Manual;
 					};
 				};
@@ -135,6 +175,7 @@
 			projectRoot = "";
 			targets = (
 				263DCAD1FDBA7D2C80C46955 /* Altar */,
+				5315550502A7FA57E1668961 /* AltarTests */,
 			);
 		};
 /* End PBXProject section */
@@ -152,6 +193,18 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		21C7E2831AA1282B1F949AEA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6AAE7815A06420C7B3B2088 /* AltarTests.swift in Sources */,
+				966B99AF61F24AC3A873595C /* Arquivos.swift in Sources */,
+				EE2A65AADDA81EA26A5DD9C2 /* Config.swift in Sources */,
+				0DE4E7A74D84D9D4B535F03E /* Planta.swift in Sources */,
+				E3EB6130AEC4CE237FA0E8FF /* Sequencia.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C4B142492ED4278A83D19FBD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -170,6 +223,7 @@
 				E522534E2EE6D08878A68F23 /* PaginaDoDia.swift in Sources */,
 				0CD782C244F69D96A4CFBC70 /* Planta.swift in Sources */,
 				AC1ACBAD80D8AA5E7502A879 /* Plantas.swift in Sources */,
+				7396B61102BE3A074093DE0B /* Sequencia.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +286,24 @@
 			};
 			name = Release;
 		};
+		84DDE6F01BC182F276E2B26F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielacioly.altar.tests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		9BE17AB597C0017CB2A95773 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -247,11 +319,29 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielacioly.altar;
 				SDKROOT = macosx;
 			};
 			name = Release;
+		};
+		C80D8EF9505F205224FDEF6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielacioly.altar.tests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
 		};
 		CE35E96B4C085C00BCF207A5 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -268,7 +358,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielacioly.altar;
 				SDKROOT = macosx;
 			};
@@ -354,6 +444,15 @@
 			buildConfigurations = (
 				EA9C90937C4BAAA54E2A294F /* Debug */,
 				5797D771DFA2EDE6BA26C09B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B88F5184322AC24DE6DBA2E5 /* Build configuration list for PBXNativeTarget "AltarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C80D8EF9505F205224FDEF6C /* Debug */,
+				84DDE6F01BC182F276E2B26F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

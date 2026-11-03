@@ -158,42 +158,19 @@ struct Historico: View {
     }
 
     private var faixas: some View {
-        let ordenadas = loja.config.faixas.sorted {
-            $0.inicio < $1.inicio
-        }
-
         var contagem: [String: Int] = [:]
-
         for d in loja.dias.values {
-            guard let f = d.feitoEm else { continue }
-
-            let minuto = minutoDoDia(f)
-
-            let faixa = ordenadas.last {
-                $0.inicio <= minuto
-            } ?? ordenadas.last
-
-            if let faixa {
+            if let f = d.feitoEm, let faixa = loja.config.faixa(em: f) {
                 contagem[faixa.nome, default: 0] += 1
             }
         }
-
-        let ordem = ordenadas.map(\.nome)
-
-        let lista = ordem.compactMap { nome in
-            contagem[nome].map {
-                (nome: nome, n: $0)
-            }
+        let lista = loja.config.faixas.sorted { $0.inicio < $1.inicio }.compactMap { f in
+            contagem[f.nome].map { (nome: f.nome, n: $0) }
         }
 
-        return Cartao(
-            titulo: "Quando você faz o devocional",
-            preencher: largura > 980
-        ) {
+        return Cartao(titulo: "Quando você faz o devocional", preencher: largura > 980) {
             if lista.isEmpty {
-                Vazio(
-                    texto: "Assim que você marcar alguns dias, aparece aqui em que faixas do dia você mais faz o devocional."
-                )
+                Vazio(texto: "Assim que você marcar alguns dias, aparece aqui em que faixas do dia você mais faz o devocional.")
             } else {
                 let maior = lista.map(\.n).max() ?? 1
                 VStack(alignment: .leading, spacing: 10) {
