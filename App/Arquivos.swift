@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 
 struct Versiculo: Codable, Identifiable, Hashable {
     var id = UUID()
@@ -56,6 +56,17 @@ struct Dia: Codable, Identifiable {
     }
 }
 
+struct Perfil: Codable, Equatable {
+    var nome = ""
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        nome = try c.decodeIfPresent(String.self, forKey: .nome) ?? ""
+    }
+}
+
 struct Estado: Codable {
     var dia = ""
     var feitoEm: Date?
@@ -94,6 +105,8 @@ enum Arquivos {
     static var registroURL: URL { pasta.appendingPathComponent("registro.jsonl") }
     static var configURL: URL { pasta.appendingPathComponent("ajustes.json") }
     static var versiculosURL: URL { pasta.appendingPathComponent("versiculos.json") }
+    static var perfilURL: URL { pasta.appendingPathComponent("perfil.json") }
+    static var fotoURL: URL { pasta.appendingPathComponent("foto.png") }
     static var dias: URL { subpasta("dias") }
     static var oracoes: URL { subpasta("oracoes") }
 
@@ -140,6 +153,37 @@ enum Arquivos {
         return texto.split(separator: "\n").compactMap { try? d.decode(Evento.self, from: Data($0.utf8)) }
     }
 
+    static func ditto(_ argumentos: [String]) throws {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+        p.arguments = argumentos
+        try p.run()
+        p.waitUntilExit()
+        if p.terminationStatus != 0 { throw CocoaError(.fileWriteUnknown) }
+    }
+
+    static func exportar(para destino: URL) throws {
+        try? FileManager.default.removeItem(at: destino)
+        try ditto(["-c", "-k", "--sequesterRsrc", "--keepParent", pasta.path, destino.path])
+    }
+
+    static func restaurar(de zip: URL) throws {
+        let fm = FileManager.default
+        let temp = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? fm.removeItem(at: temp) }
+        try ditto(["-x", "-k", zip.path, temp.path])
+        let candidatos = [temp] + ((try? fm.contentsOfDirectory(at: temp, includingPropertiesForKeys: nil)) ?? [])
+        guard let origem = candidatos.first(where: { fm.fileExists(atPath: $0.appendingPathComponent("dias").path) }) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        for item in (try? fm.contentsOfDirectory(at: pasta, includingPropertiesForKeys: nil)) ?? [] {
+            try fm.trashItem(at: item, resultingItemURL: nil)
+        }
+        for item in try fm.contentsOfDirectory(at: origem, includingPropertiesForKeys: nil) {
+            try fm.copyItem(at: item, to: pasta.appendingPathComponent(item.lastPathComponent))
+        }
+    }
+
     static func versiculosDoApp() -> [Versiculo] {
         guard let url = Bundle.main.url(forResource: "versiculos", withExtension: "json") else { return [] }
         return ler([Versiculo].self, de: url) ?? []
@@ -153,12 +197,18 @@ final class Loja: ObservableObject {
     @Published var versiculos: [Versiculo] {
         didSet { Arquivos.gravar(versiculos, em: Arquivos.versiculosURL) }
     }
+    @Published var perfil: Perfil {
+        didSet { if perfil != oldValue { Arquivos.gravar(perfil, em: Arquivos.perfilURL) } }
+    }
+    @Published private(set) var foto: NSImage?
     @Published private(set) var dias: [String: Dia] = [:]
     @Published private(set) var eventos: [Evento] = []
 
     init() {
         config = Arquivos.ler(Config.self, de: Arquivos.configURL) ?? Config()
         versiculos = Arquivos.ler([Versiculo].self, de: Arquivos.versiculosURL) ?? Arquivos.versiculosDoApp()
+        perfil = Arquivos.ler(Perfil.self, de: Arquivos.perfilURL) ?? Perfil()
+        foto = NSImage(contentsOf: Arquivos.fotoURL)
         let urls = (try? FileManager.default.contentsOfDirectory(at: Arquivos.dias, includingPropertiesForKeys: nil)) ?? []
         for url in urls where url.pathExtension == "json" {
             if let d = Arquivos.ler(Dia.self, de: url) { dias[d.id] = d }
@@ -226,6 +276,30 @@ final class Loja: ObservableObject {
             anterior = d
         }
         return maior
+    }
+
+    func mudarFoto(_ url: URL) {
+        guard let original = NSImage(contentsOf: url) else { return }
+        let lado: CGFloat = 512
+        let tamanho = original.size
+        let escala = lado / max(1, min(tamanho.width, tamanho.height))
+        let alvo = NSSize(width: tamanho.width * escala, height: tamanho.height * escala)
+        let nova = NSImage(size: NSSize(width: lado, height: lado), flipped: false) { _ in
+            original.draw(in: NSRect(x: (lado - alvo.width) / 2, y: (lado - alvo.height) / 2, width: alvo.width, height: alvo.height))
+            return true
+        }
+        guard let tiff = nova.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff), let png = rep.representation(using: .png, properties: [:]) else { return }
+        try? png.write(to: Arquivos.fotoURL, options: .atomic)
+        foto = NSImage(data: png)
+    }
+
+    func removerFoto() {
+        try? FileManager.default.removeItem(at: Arquivos.fotoURL)
+        foto = nil
+    }
+
+    var primeiroDevocional: Date? {
+        feitos.compactMap(dataDaChave).min()
     }
 
     func urlDaOracao(_ o: Oracao) -> URL {

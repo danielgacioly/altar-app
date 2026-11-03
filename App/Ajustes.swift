@@ -8,6 +8,32 @@ enum Aba: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+enum Aparencia: String, CaseIterable, Identifiable {
+    case automatico, claro, escuro
+
+    var id: String { rawValue }
+
+    var nome: String {
+        switch self {
+        case .automatico: "Automático"
+        case .claro: "Claro"
+        case .escuro: "Escuro"
+        }
+    }
+
+    static var salva: Aparencia {
+        Aparencia(rawValue: UserDefaults.standard.string(forKey: "aparencia") ?? "") ?? .automatico
+    }
+
+    func aplicar() {
+        switch self {
+        case .automatico: NSApp.appearance = nil
+        case .claro: NSApp.appearance = NSAppearance(named: .aqua)
+        case .escuro: NSApp.appearance = NSAppearance(named: .darkAqua)
+        }
+    }
+}
+
 struct Ajustes: View {
     @EnvironmentObject var loja: Loja
     @EnvironmentObject var lembrete: Lembrete
@@ -16,6 +42,7 @@ struct Ajustes: View {
     @State private var erroLogin: String?
     @State private var confirmar = false
     @State private var largura: CGFloat = 0
+    @AppStorage("aparencia") private var aparencia = Aparencia.automatico
 
     private var largo: Bool { largura > 980 }
 
@@ -24,11 +51,11 @@ struct Ajustes: View {
             VStack(alignment: .leading, spacing: 36) {
                 switch aba {
                 case .lembretes:
-                    lembretes
-                    VStack(alignment: .leading, spacing: 16) { extras }
-                    VStack(alignment: .leading, spacing: 16) { faixas }
+                    lembretes.entrada(0)
+                    VStack(alignment: .leading, spacing: 16) { extras }.entrada(1)
+                    VStack(alignment: .leading, spacing: 16) { faixas }.entrada(2)
                 case .sistema:
-                    sistema
+                    sistema.entrada(0)
                 }
             }
             .padding(.horizontal, 32)
@@ -71,7 +98,7 @@ struct Ajustes: View {
 
     private var lembretes: some View {
         lado {
-            Grupo(titulo: "Frequência", icone: "bell.badge", rodape: "Tela bloqueada e Mac dormindo também não contam.") {
+            Grupo(titulo: "Frequência", rodape: "Tela bloqueada e Mac dormindo também não contam.") {
                 Linha("Intervalo entre lembretes", "Tempo de uso do Mac até o próximo lembrete.") {
                     Stepper("\(loja.config.minutosEntreLembretes) min", value: $loja.config.minutosEntreLembretes, in: 5...240, step: 5)
                 }
@@ -85,7 +112,7 @@ struct Ajustes: View {
                 }
             }
         } _: {
-            Grupo(titulo: "Horários", icone: "moon.zzz", rodape: nil) {
+            Grupo(titulo: "Horários", rodape: nil) {
                 Linha("O dia vira às", "Antes desse horário, o que você fizer conta para o dia anterior.") {
                     Picker("O dia vira às", selection: $loja.config.horaViradaDoDia) {
                         ForEach(0..<7) { Text("\($0)h").tag($0) }
@@ -111,7 +138,7 @@ struct Ajustes: View {
 
     @ViewBuilder
     private var extras: some View {
-        Cabecalho(titulo: "Botões extras", icone: "hand.tap", texto: "Aparecem na notificação só nos dias e horários escolhidos, junto com Sim, Não e Me lembra. Exemplo: \"Estou na faculdade\" de segunda a quinta, das 17h às 21h. Se dois valerem ao mesmo tempo, aparece o primeiro da lista.") {
+        Cabecalho(titulo: "Botões extras", texto: "Aparecem na notificação só nos dias e horários escolhidos, junto com Sim, Não e Me lembra. Exemplo: \"Estou na faculdade\" de segunda a quinta, das 17h às 21h. Se dois valerem ao mesmo tempo, aparece o primeiro da lista.") {
             Button {
                 loja.config.extras.append(BotaoExtra(nome: "Novo botão", ocorrencias: [Ocorrencia(dias: [2, 3, 4, 5, 6], inicio: 9 * 60, fim: 12 * 60)]))
             } label: {
@@ -133,7 +160,7 @@ struct Ajustes: View {
 
     @ViewBuilder
     private var faixas: some View {
-        Cabecalho(titulo: "Faixas e frases", icone: "text.bubble", texto: "Cada faixa vai do seu horário até o começo da próxima. A frase do lembrete é sorteada entre as da faixa, sem repetir a anterior.") {
+        Cabecalho(titulo: "Faixas e frases", texto: "Cada faixa vai do seu horário até o começo da próxima. A frase do lembrete é sorteada entre as da faixa, sem repetir a anterior.") {
             Button {
                 loja.config.faixas.append(Faixa(nome: "Nova faixa", inicio: 12 * 60, frases: ["Já fez o devocional hoje?"]))
             } label: {
@@ -152,21 +179,36 @@ struct Ajustes: View {
 
     private var sistema: some View {
         lado {
-            Grupo(titulo: "Sistema", icone: "macwindow", rodape: erroLogin) {
-                Linha("Abrir junto com o login", "O Altar começa a contar assim que você entra no Mac.") {
-                    Toggle("Abrir junto com o login", isOn: Binding(get: { noLogin }, set: { mudarLogin($0) }))
-                        .labelsHidden()
-                        .toggleStyle(.switch)
+            Grupo(titulo: "Aparência", rodape: "No automático, o Altar acompanha o modo claro ou escuro do Mac.") {
+                HStack(alignment: .top, spacing: 22) {
+                    ForEach(Aparencia.allCases) { a in
+                        OpcaoDeAparencia(aparencia: a, escolhida: aparencia == a) {
+                            withAnimation(.snappy) { aparencia = a }
+                            a.aplicar()
+                        }
+                    }
                 }
-                Divider()
-                Linha("Estilo da notificação", lembrete.estiloAlerta ? "Alerta: fica na tela até você responder." : "Faixa: some sozinha. Mude para Alertas para não perder o lembrete.") {
-                    Button("Abrir ajustes…") { lembrete.abrirAjustesDeNotificacao() }
-                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 18)
+                .frame(maxWidth: .infinity)
             }
         } _: {
-            Grupo(titulo: "Padrão", icone: "arrow.counterclockwise", rodape: "Mensagens e páginas dos dias não mudam.") {
-                Linha("Restaurar ajustes padrão", "Volta intervalos, horários, botões extras e faixas ao que vem com o app.") {
-                    Button("Restaurar…", role: .destructive) { confirmar = true }
+            VStack(spacing: 24) {
+                Grupo(titulo: "Sistema", rodape: erroLogin) {
+                    Linha("Abrir junto com o login", "O Altar começa a contar assim que você entra no Mac.") {
+                        Toggle("Abrir junto com o login", isOn: Binding(get: { noLogin }, set: { mudarLogin($0) }))
+                            .labelsHidden()
+                            .toggleStyle(.switch)
+                    }
+                    Divider()
+                    Linha("Estilo da notificação", lembrete.estiloAlerta ? "Alerta: fica na tela até você responder." : "Faixa: some sozinha. Mude para Alertas para não perder o lembrete.") {
+                        Button("Abrir ajustes…") { lembrete.abrirAjustesDeNotificacao() }
+                    }
+                }
+                Grupo(titulo: "Padrão", rodape: "Mensagens e páginas dos dias não mudam.") {
+                    Linha("Restaurar ajustes padrão", "Volta intervalos, horários, botões extras e faixas ao que vem com o app.") {
+                        Button("Restaurar…", role: .destructive) { confirmar = true }
+                    }
                 }
             }
         }
@@ -218,18 +260,14 @@ struct Linha<Controle: View>: View {
 
 struct Grupo<Conteudo: View>: View {
     let titulo: String
-    let icone: String
     let rodape: String?
     @ViewBuilder var conteudo: Conteudo
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label {
-                Text(titulo)
-            } icon: {
-                Image(systemName: icone).foregroundStyle(verde)
-            }
-            .font(.headline)
+            Text(titulo)
+                .font(.headline)
+                .padding(.horizontal, 4)
             VStack(alignment: .leading, spacing: 0) {
                 conteudo
             }
@@ -247,19 +285,14 @@ struct Grupo<Conteudo: View>: View {
 
 struct Cabecalho<Acao: View>: View {
     let titulo: String
-    let icone: String
     let texto: String
     @ViewBuilder var acao: Acao
 
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
             VStack(alignment: .leading, spacing: 6) {
-                Label {
-                    Text(titulo)
-                } icon: {
-                    Image(systemName: icone).foregroundStyle(verde)
-                }
-                .font(.headline)
+                Text(titulo)
+                    .font(.headline)
                 Text(texto)
                     .font(.callout)
                     .foregroundStyle(.secondary)
@@ -277,8 +310,7 @@ struct Caixa: ViewModifier {
     func body(content: Content) -> some View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.separator.opacity(0.6)))
+            .modifier(Superficie(raio: 14))
     }
 }
 
@@ -310,6 +342,7 @@ struct Expansivel<Titulo: View, Conteudo: View>: View {
                 Divider()
                 conteudo
                     .padding(16)
+                    .transition(.opacity.combined(with: .offset(y: -6)))
             }
         }
     }
@@ -373,7 +406,7 @@ struct EditorDeExtra: View {
                             .help("Remover horário")
                         }
                         .padding(10)
-                        .background(.background, in: RoundedRectangle(cornerRadius: 10))
+                        .background(.background, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     }
                     Button {
                         extra.ocorrencias.append(Ocorrencia(dias: [2, 3, 4, 5, 6], inicio: 9 * 60, fim: 12 * 60))
@@ -481,5 +514,89 @@ struct EditorDeFaixa: View {
                 }
             }
         }
+    }
+}
+
+struct OpcaoDeAparencia: View {
+    let aparencia: Aparencia
+    let escolhida: Bool
+    let escolher: () -> Void
+
+    var body: some View {
+        Button(action: escolher) {
+            VStack(spacing: 10) {
+                miniatura
+                    .frame(width: 132, height: 86)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.primary.opacity(0.16), lineWidth: 1))
+                    .padding(4)
+                    .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(verde, lineWidth: escolhida ? 3 : 0))
+                    .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+                Text(aparencia.nome)
+                    .font(.callout.weight(escolhida ? .semibold : .regular))
+                    .foregroundStyle(escolhida ? .primary : .secondary)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(escolhida ? .isSelected : [])
+    }
+
+    @ViewBuilder
+    private var miniatura: some View {
+        switch aparencia {
+        case .claro:
+            MiniJanela(escuro: false)
+        case .escuro:
+            MiniJanela(escuro: true)
+        case .automatico:
+            MiniJanela(escuro: false)
+                .overlay {
+                    MiniJanela(escuro: true)
+                        .mask(HStack(spacing: 0) { Color.clear; Color.black })
+                }
+        }
+    }
+}
+
+struct MiniJanela: View {
+    let escuro: Bool
+
+    var body: some View {
+        let fundo = escuro ? Color(white: 0.14) : Color(white: 0.985)
+        let lateral = escuro ? Color(white: 0.22) : Color(white: 0.9)
+        let traco = escuro ? Color.white.opacity(0.17) : Color.black.opacity(0.1)
+        let marca = escuro ? Color(red: 0.09, green: 0.5, blue: 0.31) : Color(red: 0, green: 0.447, blue: 0.231)
+        HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 2.5) {
+                    Circle().fill(Color(red: 1, green: 0.37, blue: 0.34))
+                    Circle().fill(Color(red: 1, green: 0.74, blue: 0.18))
+                    Circle().fill(Color(red: 0.16, green: 0.78, blue: 0.25))
+                }
+                .frame(width: 19, height: 5)
+                .padding(.bottom, 5)
+                Capsule().fill(marca).frame(width: 26, height: 5)
+                Capsule().fill(traco).frame(width: 20, height: 4)
+                Capsule().fill(traco).frame(width: 24, height: 4)
+                Capsule().fill(traco).frame(width: 17, height: 4)
+            }
+            .padding(6)
+            .frame(width: 40, alignment: .topLeading)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .background(lateral, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+            VStack(alignment: .leading, spacing: 5) {
+                Capsule().fill(traco).frame(width: 36, height: 5)
+                    .padding(.bottom, 2)
+                RoundedRectangle(cornerRadius: 3, style: .continuous).fill(marca).frame(height: 14)
+                Capsule().fill(traco).frame(height: 4)
+                Capsule().fill(traco).frame(width: 44, height: 4)
+            }
+            .padding(.top, 8)
+            .padding(.trailing, 8)
+        }
+        .padding(4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(fundo)
     }
 }

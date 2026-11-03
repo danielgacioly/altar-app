@@ -7,13 +7,16 @@ struct Historico: View {
     @State private var caminho: [String] = []
     @State private var largura: CGFloat = 0
     @State private var ano = Calendar.current.component(.year, from: Date())
+    @State private var direcao = Edge.trailing
+    @State private var barras = false
     private let cal = Calendar.current
 
     var body: some View {
         NavigationStack(path: $caminho) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    numeros
+                    numeros.entrada(0)
+                    Group {
                     if largura > 980 {
                         HStack(alignment: .top, spacing: 20) {
                             calendario
@@ -33,7 +36,9 @@ struct Historico: View {
                         recentes
                         faixas
                     }
-                    painelDoAno
+                    }
+                    .entrada(1)
+                    painelDoAno.entrada(2)
                 }
                 .padding(.horizontal, 32)
                 .padding(.vertical, 24)
@@ -49,30 +54,45 @@ struct Historico: View {
     private var numeros: some View {
         let eventos = eventosDoMes
         let naos: Set<String> = ["nao", "dispensada", "sumiu", "clicou"]
-        let colunas = Array(repeating: GridItem(.flexible(), spacing: 14), count: largura > 760 ? 5 : 3)
-        return LazyVGrid(columns: colunas, spacing: 14) {
-            Numero(valor: loja.sequenciaAtual(hoje: lembrete.estado.dia), nome: "Dias seguidos", icone: "flame.fill", cor: .orange)
-            Numero(valor: loja.maiorSequencia, nome: "Maior sequência", icone: "trophy.fill", cor: .yellow)
-            Numero(valor: diasDoMes.filter { loja.dias[chaveDoDia($0)]?.feitoEm != nil }.count, nome: "Feitos no mês", icone: "checkmark.circle.fill", cor: verde)
-            Numero(valor: eventos.filter { $0.tipo == "adiar" }.count, nome: "Adiamentos no mês", icone: "clock.arrow.circlepath", cor: .blue)
-            Numero(valor: eventos.filter { naos.contains($0.tipo) }.count, nome: "\"Não\" no mês", icone: "xmark.circle.fill", cor: .secondary)
+        let itens: [(Int, String)] = [
+            (loja.sequenciaAtual(hoje: lembrete.estado.dia), "Dias seguidos"),
+            (loja.maiorSequencia, "Maior sequência"),
+            (diasDoMes.filter { loja.dias[chaveDoDia($0)]?.feitoEm != nil }.count, "Feitos no mês"),
+            (eventos.filter { $0.tipo == "adiar" }.count, "Adiamentos no mês"),
+            (eventos.filter { naos.contains($0.tipo) }.count, "\"Não\" no mês"),
+        ]
+        return HStack(spacing: 0) {
+            ForEach(Array(itens.enumerated()), id: \.offset) { i, item in
+                if i > 0 {
+                    Divider().padding(.vertical, 16)
+                }
+                Numero(valor: item.0, nome: item.1)
+            }
         }
+        .modifier(Superficie())
     }
 
     private var calendario: some View {
-        Cartao(titulo: tituloDoMes, icone: "calendar", preencher: largura > 980) {
-            let colunas = Array(repeating: GridItem(.flexible(), spacing: 8), count: 7)
-            LazyVGrid(columns: colunas, spacing: 8) {
+        Cartao(titulo: tituloDoMes, preencher: largura > 980) {
+            let colunas = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
+            LazyVGrid(columns: colunas, spacing: 6) {
                 ForEach(Array(["dom", "seg", "ter", "qua", "qui", "sex", "sáb"].enumerated()), id: \.offset) { _, d in
                     Text(d.uppercased())
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
-                ForEach(0..<vazios, id: \.self) { _ in Color.clear.frame(height: 48) }
-                ForEach(diasDoMes, id: \.self) { data in
-                    celula(data)
-                }
             }
+            ZStack {
+                LazyVGrid(columns: colunas, spacing: 6) {
+                    ForEach(0..<vazios, id: \.self) { _ in Color.clear.frame(height: 44) }
+                    ForEach(diasDoMes, id: \.self) { data in
+                        celula(data)
+                    }
+                }
+                .id(mes)
+                .transition(.push(from: direcao))
+            }
+            .clipped()
             HStack(spacing: 16) {
                 legenda(verdeFundo, "Feito")
                 legenda(.clear, "Hoje", borda: true)
@@ -85,7 +105,12 @@ struct Historico: View {
             HStack(spacing: 4) {
                 Button { mudarMes(-1) } label: { Image(systemName: "chevron.left") }
                     .help("Mês anterior")
-                Button("Hoje") { mes = cal.dateInterval(of: .month, for: Date())?.start ?? Date() }
+                Button("Hoje") {
+                    let atual = cal.dateInterval(of: .month, for: Date())?.start ?? Date()
+                    guard atual != mes else { return }
+                    direcao = atual > mes ? .trailing : .leading
+                    withAnimation(.smooth(duration: 0.35)) { mes = atual }
+                }
                 Button { mudarMes(1) } label: { Image(systemName: "chevron.right") }
                     .help("Próximo mês")
             }
@@ -105,18 +130,19 @@ struct Historico: View {
         } label: {
             VStack(spacing: 3) {
                 Text("\(cal.component(.day, from: data))")
-                    .font(.body.weight(hoje ? .bold : .regular))
+                    .font(.body.weight(hoje || feito ? .semibold : .regular))
+                    .monospacedDigit()
                 Circle()
-                    .fill(temAlgo ? (feito ? Color.white : verde) : Color.clear)
+                    .fill(temAlgo ? (feito ? Color.white.opacity(0.9) : verde) : Color.clear)
                     .frame(width: 4, height: 4)
             }
-            .frame(maxWidth: .infinity, minHeight: 48)
-            .foregroundStyle(feito ? Color.white : (futuro ? Color.secondary.opacity(0.5) : Color.primary))
-            .background(feito ? verdeFundo : Color.secondary.opacity(futuro ? 0.03 : 0.08), in: RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(verde, lineWidth: hoje ? 2 : 0))
-            .contentShape(RoundedRectangle(cornerRadius: 10))
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .foregroundStyle(feito ? Color.white : (futuro ? Color.secondary.opacity(0.45) : Color.primary))
+            .background(feito ? verdeFundo : Color.clear, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(verde, lineWidth: hoje && !feito ? 1.5 : 0))
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(Realce(raio: 12))
         .disabled(futuro)
         .help(feito ? "Feito" : (futuro ? "" : "Abrir página"))
     }
@@ -162,7 +188,6 @@ struct Historico: View {
 
         return Cartao(
             titulo: "Quando você faz o devocional",
-            icone: "chart.bar.fill",
             preencher: largura > 980
         ) {
             if lista.isEmpty {
@@ -178,9 +203,9 @@ struct Historico: View {
                                 .frame(width: 130, alignment: .trailing)
                                 .lineLimit(1)
                             GeometryReader { proxy in
-                                RoundedRectangle(cornerRadius: 5)
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
                                     .fill(verdeFundo)
-                                    .frame(width: proxy.size.width * CGFloat(item.n) / CGFloat(maior))
+                                    .frame(width: max(6, proxy.size.width * CGFloat(item.n) / CGFloat(maior) * (barras ? 1 : 0)))
                             }
                             .frame(height: 22)
                             Text("\(item.n)")
@@ -190,13 +215,16 @@ struct Historico: View {
                     }
                 }
                 .frame(height: CGFloat(lista.count) * 32 + 10)
+                .onAppear {
+                    withAnimation(.smooth(duration: 0.8).delay(0.25)) { barras = true }
+                }
             }
         }
     }
 
     private var recentes: some View {
         let dias = loja.dias.values.filter { $0.feitoEm != nil }.sorted { $0.id > $1.id }.prefix(5)
-        return Cartao(titulo: "Últimos devocionais", icone: "clock", preencher: largura > 980) {
+        return Cartao(titulo: "Últimos devocionais", preencher: largura > 980) {
             if dias.isEmpty {
                 Vazio(texto: "Os devocionais que você registrar aparecem aqui.")
             }
@@ -221,10 +249,9 @@ struct Historico: View {
                             .foregroundStyle(.tertiary)
                     }
                     .padding(10)
-                    .background(.background, in: RoundedRectangle(cornerRadius: 10))
                     .contentShape(RoundedRectangle(cornerRadius: 10))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(Realce())
             }
         }
     }
@@ -241,7 +268,7 @@ struct Historico: View {
     private var painelDoAno: some View {
         let feitos = loja.feitos
         let doAno = feitos.filter { $0.hasPrefix(String(ano)) }.count
-        return Cartao(titulo: "\(String(ano)) · \(doAno) \(doAno == 1 ? "devocional" : "devocionais")", icone: "square.grid.3x3.fill") {
+        return Cartao(titulo: "\(String(ano)) · \(doAno) \(doAno == 1 ? "devocional" : "devocionais")") {
             GradeDoAno(ano: ano, feitos: feitos, hoje: lembrete.estado.dia) { caminho.append($0) }
                 .id(ano)
         } acoes: {
@@ -276,31 +303,31 @@ struct Historico: View {
     }
 
     private func mudarMes(_ n: Int) {
-        mes = cal.date(byAdding: .month, value: n, to: mes) ?? mes
+        direcao = n > 0 ? .trailing : .leading
+        withAnimation(.smooth(duration: 0.35)) {
+            mes = cal.date(byAdding: .month, value: n, to: mes) ?? mes
+        }
     }
 }
 
 struct Numero: View {
     let valor: Int
     let nome: String
-    let icone: String
-    let cor: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: icone)
-                .font(.title3)
-                .foregroundStyle(cor)
+        VStack(alignment: .leading, spacing: 2) {
             Text("\(valor)")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .contentTransition(.numericText())
+                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .contentTransition(.numericText(value: Double(valor)))
+                .animation(.snappy, value: valor)
             Text(nome)
                 .font(.callout)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(16)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.separator.opacity(0.6)))
     }
 }

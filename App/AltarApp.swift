@@ -6,6 +6,10 @@ extension Notification.Name {
 }
 
 final class Delegado: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        Aparencia.salva.aplicar()
+    }
+
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         NotificationCenter.default.post(name: .abrirAltar, object: nil)
         return true
@@ -55,7 +59,7 @@ struct AltarApp: App {
                 .environmentObject(loja)
                 .environmentObject(lembrete)
         }
-        .defaultLaunchBehavior(UserDefaults.standard.bool(forKey: "abrirJanela") ? .presented : .suppressed)
+        .defaultLaunchBehavior(UserDefaults.standard.bool(forKey: "abrirJanela") || !UserDefaults.standard.bool(forKey: "boasVindasVista") ? .presented : .suppressed)
         .defaultSize(width: 1100, height: 760)
         .commands {
             CommandGroup(replacing: .appTermination) {

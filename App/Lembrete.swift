@@ -28,6 +28,9 @@ final class Lembrete: NSObject, ObservableObject, UNUserNotificationCenterDelega
         observando = loja.$config.dropFirst().sink { [weak self] c in self?.registrarCategorias(c) }
         central.requestAuthorization(options: [.alert]) { _, _ in
             self.conferirEstilo()
+            if UserDefaults.standard.bool(forKey: "notificacaoDeTeste") {
+                DispatchQueue.main.async { self.notificarTeste() }
+            }
         }
         observarSistema()
         virarDiaSePreciso(Date())
@@ -144,7 +147,19 @@ final class Lembrete: NSObject, ObservableObject, UNUserNotificationCenterDelega
         registrar("exibida", versiculo: versiculo?.referencia)
     }
 
+    func notificarTeste() {
+        let faixa = config.faixa(em: Date()) ?? config.faixas.first
+        let conteudo = UNMutableNotificationContent()
+        conteudo.title = faixa?.frases.randomElement() ?? "Já fez o devocional hoje?"
+        if let v = loja.versiculos.randomElement() {
+            conteudo.body = "\(v.texto)\n\(v.referencia)"
+        }
+        conteudo.categoryIdentifier = "lembrete"
+        central.add(UNNotificationRequest(identifier: "teste-" + UUID().uuidString, content: conteudo, trigger: nil))
+    }
+
     private func responder(_ acao: String, id: String, fim: Date?) {
+        if id.hasPrefix("teste-") { return }
         guard id == estado.aguardando else {
             registrar(acao + "-antiga")
             return

@@ -12,18 +12,29 @@ struct PaginaDoDia: View {
     @State private var transcrevendo: Set<UUID> = []
     @State private var erro: String?
     @State private var largura: CGFloat = 0
+    @State private var celebrar = 0
+
+    private enum Captura { case texto, nota, oracao }
 
     private var dia: Dia { loja.dia(chave) }
     private var ehHoje: Bool { chave == lembrete.estado.dia }
 
+    private var captura: Captura? {
+        if ditadoTexto.gravando || ditadoTexto.preparando { return .texto }
+        if ditado.gravando || ditado.preparando { return .nota }
+        if gravador.gravando { return .oracao }
+        return nil
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                cabecalho
+                cabecalho.entrada(0)
                 if ehHoje {
-                    mensagemDoDia
+                    mensagemDoDia.entrada(1)
                 }
 
+                Group {
                 if largura > 980 {
                     HStack(alignment: .top, spacing: 20) {
                         devocional
@@ -44,6 +55,8 @@ struct PaginaDoDia: View {
                     notas
                     oracoes
                 }
+                }
+                .entrada(2)
 
                 if let erro {
                     Label(erro, systemImage: "exclamationmark.triangle.fill")
@@ -51,20 +64,27 @@ struct PaginaDoDia: View {
                 }
             }
             .padding(.horizontal, 32)
-            .padding(.vertical, 24)
+            .padding(.top, 24)
+            .padding(.bottom, captura == nil ? 24 : 96)
             .frame(maxWidth: 1500)
             .frame(maxWidth: .infinity)
             .modifier(Largura(largura: $largura))
         }
+        .overlay(alignment: .bottom) {
+            barra
+                .animation(.spring(duration: 0.45, bounce: 0.28), value: captura)
+        }
         .navigationTitle(ehHoje ? "Hoje" : tituloDoDia(chave))
         .onDisappear { tocador.parar() }
+        .sensoryFeedback(.levelChange, trigger: celebrar)
     }
 
     private var cabecalho: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(tituloDoDia(chave))
-                .font(.largeTitle.weight(.bold))
+                .font(.system(size: 30, weight: .bold))
             Text(ehHoje ? "Seu devocional de hoje" : "Seu devocional deste dia")
+                .font(.title3)
                 .foregroundStyle(.secondary)
         }
     }
@@ -72,28 +92,14 @@ struct PaginaDoDia: View {
     @ViewBuilder
     private var mensagemDoDia: some View {
         if let v = dia.versiculo {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Mensagem do dia", systemImage: "quote.opening")
-                    .font(.caption.weight(.semibold))
-                    .textCase(.uppercase)
-                    .opacity(0.75)
-                Text(v.texto)
-                    .font(.system(.title2, design: .serif))
-                    .lineSpacing(4)
-                    .fixedSize(horizontal: false, vertical: true)
-                if !v.rodape.isEmpty {
-                    Text(v.rodape)
-                        .font(.callout.weight(.semibold))
-                        .opacity(0.85)
-                }
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Mensagem do dia")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(verde)
+                Citacao(versiculo: v)
             }
-            .foregroundStyle(.white)
-            .padding(24)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                LinearGradient(colors: [verdeFundo, verdeFundo.mix(with: .black, by: 0.25)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                in: RoundedRectangle(cornerRadius: 16)
-            )
+            .padding(.vertical, 4)
+            .frame(maxWidth: 900, alignment: .leading)
         }
     }
 
@@ -105,6 +111,7 @@ struct PaginaDoDia: View {
                     Image(systemName: "checkmark.seal.fill")
                         .font(.system(size: 34))
                         .foregroundStyle(.white)
+                        .symbolEffect(.bounce.up, options: .nonRepeating, value: celebrar)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Devocional registrado")
                             .font(.title3.weight(.semibold))
@@ -112,6 +119,7 @@ struct PaginaDoDia: View {
                         if ehHoje && n > 0 {
                             Text(n == 1 ? "1 dia seguido" : "\(n) dias seguidos")
                                 .opacity(0.85)
+                                .contentTransition(.numericText(value: Double(n)))
                         }
                     }
                     .foregroundStyle(.white)
@@ -123,13 +131,16 @@ struct PaginaDoDia: View {
                         .labelsHidden()
                         .fixedSize()
                     Spacer()
-                    Button("Desfazer") { lembrete.marcarFeito(chave, em: nil) }
-                        .buttonStyle(.bordered)
+                    Button("Desfazer") {
+                        withAnimation(.snappy) { lembrete.marcarFeito(chave, em: nil) }
+                    }
+                    .buttonStyle(.bordered)
                 }
             }
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(verdeFundo, in: RoundedRectangle(cornerRadius: 16))
+            .background(verdeFundo, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .transition(.scale(scale: 0.96).combined(with: .opacity))
         } else {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 12) {
@@ -144,7 +155,10 @@ struct PaginaDoDia: View {
                     }
                 }
                 Button {
-                    lembrete.marcarFeito(chave, em: horarioPadrao())
+                    withAnimation(.spring(duration: 0.5, bounce: 0.3)) {
+                        lembrete.marcarFeito(chave, em: horarioPadrao())
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { celebrar += 1 }
                 } label: {
                     Label("Registrar devocional", systemImage: "checkmark")
                         .font(.headline)
@@ -157,13 +171,13 @@ struct PaginaDoDia: View {
             }
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(verde.opacity(0.5), lineWidth: 1.5))
+            .modifier(Superficie())
+            .transition(.scale(scale: 0.96).combined(with: .opacity))
         }
     }
 
     private var devocional: some View {
-        Cartao(titulo: "Devocional", icone: "book.closed", preencher: largura > 980) {
+        Cartao(titulo: "Devocional", preencher: largura > 980) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Texto bíblico")
                     .font(.subheadline.weight(.semibold))
@@ -172,7 +186,7 @@ struct PaginaDoDia: View {
                     .textFieldStyle(.plain)
                     .font(.system(size: 15))
                     .padding(10)
-                    .background(.background, in: RoundedRectangle(cornerRadius: 8))
+                    .background(.background, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             VStack(alignment: .leading, spacing: 6) {
                 Text("O que eu escrevi")
@@ -184,7 +198,7 @@ struct PaginaDoDia: View {
                     .scrollContentBackground(.hidden)
                     .padding(6)
                     .frame(minHeight: 260, maxHeight: .infinity)
-                    .background(.background, in: RoundedRectangle(cornerRadius: 8))
+                    .background(.background, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .overlay(alignment: .topLeading) {
                         if dia.texto.isEmpty {
                             Text("O que Deus falou com você nesse texto?")
@@ -198,50 +212,24 @@ struct PaginaDoDia: View {
             }
             .frame(maxHeight: .infinity)
 
-            if ditadoTexto.gravando || ditadoTexto.preparando {
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "waveform")
-                        .symbolEffect(.variableColor.iterative, isActive: ditadoTexto.gravando)
-                        .foregroundStyle(.red)
-                    Text(ditadoTexto.preparando ? "Preparando o microfone…" : (ditadoTexto.texto.isEmpty ? "Pode falar. O texto entra no fim do que você escreveu." : ditadoTexto.texto))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(10)
-                .background(.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
-            }
-
             if let e = ditadoTexto.erro {
                 Text(e).foregroundStyle(.red).font(.callout)
             }
         } acoes: {
-            Button {
-                Task {
-                    if ditadoTexto.gravando {
-                        await ditadoTexto.parar()
-                        let t = ditadoTexto.texto
-                        if !t.isEmpty {
-                            loja.mudar(chave) { d in
-                                d.texto = d.texto.isEmpty ? t : d.texto + (d.texto.hasSuffix("\n") ? "" : "\n") + t
-                            }
-                        }
-                    } else {
-                        await ditadoTexto.iniciar()
-                    }
-                }
-            } label: {
+            Button(action: alternarDitadoTexto) {
                 Label(ditadoTexto.gravando ? "Parar" : "Ditar", systemImage: ditadoTexto.gravando ? "stop.fill" : "mic.fill")
+                    .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
             .tint(ditadoTexto.gravando ? .red : nil)
-            .disabled(ditadoTexto.preparando || ditado.gravando)
+            .disabled(ditadoTexto.preparando || (captura != nil && captura != .texto))
             .help("Ditar no que você escreveu")
         }
     }
 
     private var notas: some View {
-        Cartao(titulo: "Notas", icone: "note.text") {
+        Cartao(titulo: "Notas") {
             if dia.notas.isEmpty && rascunho == nil && !ditado.gravando && !ditado.preparando {
                 Vazio(texto: "Nenhuma nota ainda. Escreva ou dite pelo microfone.")
             }
@@ -256,19 +244,6 @@ struct PaginaDoDia: View {
                 }
             }
 
-            if ditado.gravando || ditado.preparando {
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "waveform")
-                        .symbolEffect(.variableColor.iterative, isActive: ditado.gravando)
-                        .foregroundStyle(.red)
-                    Text(ditado.preparando ? "Preparando o microfone…" : (ditado.texto.isEmpty ? "Pode falar…" : ditado.texto))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(10)
-                .background(.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
-            }
-
             if let r = rascunho {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Confira o texto antes de salvar")
@@ -277,7 +252,7 @@ struct PaginaDoDia: View {
                     TextField("Texto ditado", text: Binding(get: { r }, set: { rascunho = $0 }), axis: .vertical)
                         .textFieldStyle(.plain)
                         .padding(8)
-                        .background(.background, in: RoundedRectangle(cornerRadius: 8))
+                        .background(.background, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     HStack {
                         Button("Descartar") { rascunho = nil }
                         Button("Salvar nota") {
@@ -297,21 +272,12 @@ struct PaginaDoDia: View {
             }
         } acoes: {
             HStack(spacing: 6) {
-                Button {
-                    Task {
-                        if ditado.gravando {
-                            await ditado.parar()
-                            rascunho = ditado.texto
-                        } else {
-                            rascunho = nil
-                            await ditado.iniciar()
-                        }
-                    }
-                } label: {
+                Button(action: alternarDitado) {
                     Label(ditado.gravando ? "Parar" : "Ditar", systemImage: ditado.gravando ? "stop.fill" : "mic.fill")
+                        .contentTransition(.symbolEffect(.replace))
                 }
                 .tint(ditado.gravando ? .red : nil)
-                .disabled(ditado.preparando || ditadoTexto.gravando)
+                .disabled(ditado.preparando || (captura != nil && captura != .nota))
                 .help("Ditar uma nota pelo microfone")
                 Button {
                     loja.mudar(chave) { $0.notas.append(Nota(texto: "")) }
@@ -326,7 +292,7 @@ struct PaginaDoDia: View {
     }
 
     private var oracoes: some View {
-        Cartao(titulo: "Orações", icone: "hands.and.sparkles") {
+        Cartao(titulo: "Orações") {
             if dia.oracoes.isEmpty && !gravador.gravando {
                 Vazio(texto: "Grave uma oração para ouvir depois.")
             }
@@ -372,46 +338,131 @@ struct PaginaDoDia: View {
                     .help("Apagar oração")
                 }
                 .padding(8)
-                .background(.background, in: RoundedRectangle(cornerRadius: 10))
-            }
-
-            if let inicio = gravador.inicio {
-                HStack(spacing: 10) {
-                    Image(systemName: "record.circle.fill")
-                        .foregroundStyle(.red)
-                        .symbolEffect(.pulse)
-                    Text("Gravando")
-                    TimelineView(.periodic(from: inicio, by: 1)) { ctx in
-                        Text(duracaoTexto(ctx.date.timeIntervalSince(inicio)))
-                            .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                }
-                .padding(10)
-                .background(.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+                .background(.background, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
             }
 
             if let e = gravador.erro {
                 Text(e).foregroundStyle(.red).font(.callout)
             }
         } acoes: {
-            Button {
-                if gravador.gravando {
-                    if let o = gravador.parar() {
-                        loja.mudar(chave) { $0.oracoes.append(o) }
-                    }
-                } else {
-                    tocador.parar()
-                    Task { await gravador.iniciar() }
-                }
-            } label: {
+            Button(action: alternarGravacao) {
                 Label(gravador.gravando ? "Parar" : "Gravar", systemImage: gravador.gravando ? "stop.fill" : "record.circle")
+                    .contentTransition(.symbolEffect(.replace))
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
             .tint(gravador.gravando ? .red : nil)
+            .disabled(captura != nil && captura != .oracao)
             .help("Gravar uma oração em áudio")
+        }
+    }
+
+    @ViewBuilder
+    private var barra: some View {
+        if let c = captura {
+            GlassEffectContainer(spacing: 10) {
+                HStack(spacing: 10) {
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(.red)
+                            .frame(width: 9, height: 9)
+                            .phaseAnimator([1.0, 0.3]) { ponto, fase in
+                                ponto.opacity(fase)
+                            } animation: { _ in .easeInOut(duration: 0.9) }
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(c == .oracao ? "Gravando oração" : (c == .nota ? "Ditando uma nota" : "Ditando no seu texto"))
+                                .font(.callout.weight(.semibold))
+                            detalhe(c)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .truncationMode(.head)
+                        }
+                        .frame(minWidth: 180, maxWidth: 440, alignment: .leading)
+                    }
+                    .padding(.leading, 18)
+                    .padding(.trailing, 22)
+                    .padding(.vertical, 11)
+                    .glassEffect(.regular, in: Capsule())
+
+                    Button {
+                        switch c {
+                        case .texto: alternarDitadoTexto()
+                        case .nota: alternarDitado()
+                        case .oracao: alternarGravacao()
+                        }
+                    } label: {
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 15, weight: .semibold))
+                            .frame(width: 34, height: 34)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .buttonBorderShape(.circle)
+                    .tint(.red)
+                    .disabled(ditado.preparando || ditadoTexto.preparando)
+                    .help("Parar")
+                }
+            }
+            .padding(.bottom, 24)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
+    @ViewBuilder
+    private func detalhe(_ c: Captura) -> some View {
+        switch c {
+        case .oracao:
+            if let inicio = gravador.inicio {
+                TimelineView(.periodic(from: inicio, by: 1)) { ctx in
+                    Text(duracaoTexto(ctx.date.timeIntervalSince(inicio)))
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                }
+            }
+        case .texto:
+            Text(ditadoTexto.preparando ? "Preparando o microfone…" : (ditadoTexto.texto.isEmpty ? "Pode falar. O texto entra no fim do que você escreveu." : ditadoTexto.texto))
+        case .nota:
+            Text(ditado.preparando ? "Preparando o microfone…" : (ditado.texto.isEmpty ? "Pode falar. Você confere antes de salvar." : ditado.texto))
+        }
+    }
+
+    private func alternarDitadoTexto() {
+        Task {
+            if ditadoTexto.gravando {
+                await ditadoTexto.parar()
+                let t = ditadoTexto.texto
+                if !t.isEmpty {
+                    loja.mudar(chave) { d in
+                        d.texto = d.texto.isEmpty ? t : d.texto + (d.texto.hasSuffix("\n") ? "" : "\n") + t
+                    }
+                }
+            } else {
+                await ditadoTexto.iniciar()
+            }
+        }
+    }
+
+    private func alternarDitado() {
+        Task {
+            if ditado.gravando {
+                await ditado.parar()
+                withAnimation(.snappy) { rascunho = ditado.texto }
+            } else {
+                rascunho = nil
+                await ditado.iniciar()
+            }
+        }
+    }
+
+    private func alternarGravacao() {
+        if gravador.gravando {
+            if let o = gravador.parar() {
+                withAnimation(.snappy) { loja.mudar(chave) { $0.oracoes.append(o) } }
+            }
+        } else {
+            tocador.parar()
+            Task { await gravador.iniciar() }
         }
     }
 
@@ -459,8 +510,8 @@ struct NotaEditavel: View {
                 TextField("Nota", text: $texto, axis: .vertical)
                     .textFieldStyle(.plain)
                     .padding(8)
-                    .background(.background, in: RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(verde.opacity(mudou ? 0.6 : 0)))
+                    .background(.background, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(verde.opacity(mudou ? 0.6 : 0)))
                 Button(action: apagar) {
                     Image(systemName: "trash")
                 }
@@ -477,8 +528,10 @@ struct NotaEditavel: View {
                 }
                 .controlSize(.small)
                 .padding(.trailing, 24)
+                .transition(.opacity.combined(with: .offset(y: -4)))
             }
         }
+        .animation(.snappy(duration: 0.2), value: mudou)
         .onChange(of: nota.texto) { _, novo in texto = novo }
     }
 }

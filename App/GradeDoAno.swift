@@ -43,9 +43,9 @@ struct GradeDoAno: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            GeometryReader { g in
-                let lado = tamanho(g.size)
+        GeometryReader { g in
+            let lado = tamanho(g.size)
+            ZStack(alignment: .topLeading) {
                 Canvas { ctx, _ in
                     for m in meses {
                         ctx.draw(Text(m.nome).font(.caption2).foregroundStyle(.secondary), at: CGPoint(x: x(m.coluna, lado), y: 0), anchor: .topLeading)
@@ -75,21 +75,30 @@ struct GradeDoAno: View {
                 .onTapGesture { p in
                     if let k = chave(em: p, lado: lado), k <= hoje { abrir(k) }
                 }
-            }
-            .aspectRatio((rotulo + CGFloat(colunas) * 17) / (topo + 7 * 17), contentMode: .fit)
 
-            HStack {
-                if let sobre, let data = dataDaChave(sobre) {
-                    Text(data.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(ptBR)))
-                    Text(feitos.contains(sobre) ? "· devocional registrado" : (sobre > hoje ? "" : "· sem registro"))
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("Passe o mouse num dia para ver a data. Clique para abrir a página dele.")
-                        .foregroundStyle(.secondary)
+                if let sobre, let c = celulas.first(where: { $0.chave == sobre }) {
+                    Text(dica(sobre))
+                        .font(.caption.weight(.medium))
+                        .fixedSize()
+                        .padding(.horizontal, 11)
+                        .padding(.vertical, 6)
+                        .glassEffect(.regular, in: Capsule())
+                        .position(x: min(max(x(c.coluna, lado) + lado / 2, 120), g.size.width - 120), y: y(c.linha, lado) - 16)
+                        .allowsHitTesting(false)
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 }
             }
-            .font(.caption)
+            .animation(.snappy(duration: 0.18), value: sobre)
         }
+        .aspectRatio((rotulo + CGFloat(colunas) * 17) / (topo + 7 * 17), contentMode: .fit)
+    }
+
+    private func dica(_ k: String) -> String {
+        guard let data = dataDaChave(k) else { return k }
+        let t = data.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(ptBR))
+        let nome = t.prefix(1).uppercased() + t.dropFirst()
+        if feitos.contains(k) { return nome + " · devocional feito" }
+        return k > hoje ? nome : nome + " · sem registro"
     }
 
     private func tamanho(_ s: CGSize) -> CGFloat {

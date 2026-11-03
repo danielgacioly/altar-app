@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altar · devocional no seu Mac</title>
+<meta name="description" content="Altar é um app de Mac que lembra você de fazer o devocional ao longo do dia e guarda uma página para cada dia. Tudo fica no seu Mac.">
+<link rel="icon" href="icone.png">
+<meta property="og:title" content="Altar">
+<meta property="og:description" content="Um lembrete gentil para o dia não passar sem um tempo com Deus.">
+<meta property="og:image" content="icone.png">
+<style>
+:root {
+  --verde: #00723b;
+  --verde-claro: #e7f2ec;
+  --fundo: #fbfbf9;
+  --superficie: #ffffff;
+  --texto: #1d1d1f;
+  --suave: #6e6e73;
+  --linha: rgba(0, 0, 0, 0.08);
+  --sombra: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.07);
+  --vidro: rgba(255, 255, 255, 0.72);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --verde: #2fa86a;
+    --verde-claro: #12261b;
+    --fundo: #0f0f10;
+    --superficie: #1c1c1e;
+    --texto: #f5f5f7;
+    --suave: #a1a1a6;
+    --linha: rgba(255, 255, 255, 0.09);
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.4);
+    --vidro: rgba(40, 40, 42, 0.72);
+  }
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif { font-family: ui-serif, "New York", Georgia, serif; }
+.largura { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+nav {
+  position: sticky; top: 12px; z-index: 10;
+  margin: 12px auto 0; width: fit-content;
+  display: flex; align-items: center; gap: 22px;
+  padding: 8px 10px 8px 14px;
+  background: var(--vidro);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--linha);
+  border-radius: 999px;
+  box-shadow: var(--sombra);
+  font-size: 14px;
+}
+nav .marca { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+nav .marca img { width: 22px; height: 22px; border-radius: 6px; }
+nav .links { display: flex; gap: 18px; color: var(--suave); }
+nav .links a:hover { color: var(--texto); }
+.botao {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 999px;
+  background: var(--verde); color: #fff; font-weight: 600; font-size: 16px;
+  transition: transform .2s ease, filter .2s ease;
+}
+.botao:hover { filter: brightness(1.08); }
+.botao:active { transform: scale(.97); }
+.botao.leve { background: transparent; color: var(--texto); border: 1px solid var(--linha); }
+nav .botao { padding: 7px 14px; font-size: 14px; }
+@media (max-width: 640px) { nav .links { display: none; } }
+
+.hero { text-align: center; padding: 96px 0 40px; }
+.hero .icone { width: 112px; height: 112px; border-radius: 26px; box-shadow: var(--sombra); animation: surgir .9s cubic-bezier(.2, .9, .3, 1.3) both; }
+.hero h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.03; letter-spacing: -0.035em; margin-top: 28px; font-weight: 700; }
+.hero h1 span { color: var(--verde); }
+.hero p { font-size: clamp(19px, 2.4vw, 23px); color: var(--suave); max-width: 620px; margin: 20px auto 0; }
+.hero .acoes { display: flex; gap: 12px; justify-content: center; margin-top: 34px; flex-wrap: wrap; }
+.hero .nota { font-size: 13px; color: var(--suave); margin-top: 14px; }
+
+.palco {
+  position: relative; margin: 56px auto 0; max-width: 920px; height: 380px; text-align: left;
+  border-radius: 28px; overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 20% 10%, #4f9f6c 0%, transparent 60%),
+    radial-gradient(100% 80% at 90% 100%, #00723b 0%, transparent 55%),
+    linear-gradient(160deg, #2f6f4b, #0d3b24);
+  box-shadow: var(--sombra);
+}
+.palco::after { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 50% at 50% 0%, rgba(255,255,255,.18), transparent); }
+.notificacao {
+  --vidro-n: rgba(246, 246, 246, 0.8); --texto-n: #1d1d1f; --borda-n: rgba(255, 255, 255, 0.55); --botao-n: rgba(0, 0, 0, 0.07);
+  position: absolute; top: 44px; right: 20px; width: min(440px, calc(100% - 40px)); z-index: 1;
+  display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center;
+  background: var(--vidro-n); color: var(--texto-n);
+  backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid var(--borda-n);
+  border-radius: 24px; padding: 14px 14px 12px 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: descer 1s .5s cubic-bezier(.2, .9, .3, 1.15) both;
+}
+@media (prefers-color-scheme: dark) {
+  .notificacao { --vidro-n: rgba(38, 38, 40, 0.82); --texto-n: #f5f5f7; --borda-n: rgba(255, 255, 255, 0.12); --botao-n: rgba(255, 255, 255, 0.1); }
+}
+.notificacao > img { width: 44px; height: 44px; border-radius: 10px; }
+.notificacao b { display: block; font-size: 14.5px; line-height: 1.3; }
+.notificacao .versiculo { font-size: 14px; line-height: 1.35; margin-top: 2px; }
+.notificacao .rodape { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+.notificacao .opcoes { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 999px; background: var(--botao-n); }
+.notificacao .fechar { position: absolute; top: -8px; left: -8px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--vidro-n); border: 1px solid var(--borda-n); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.barra-menu {
+  position: absolute; top: 0; left: 0; right: 0; height: 28px; z-index: 1;
+  background: rgba(255, 255, 255, 0.16); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding: 0 16px;
+  color: rgba(255, 255, 255, 0.92); font-size: 13px; font-weight: 500;
+}
+.barra-menu svg { width: 16px; height: 16px; }
+.palco .citacao {
+  position: absolute; left: 44px; bottom: 44px; max-width: 420px; z-index: 1;
+  color: rgba(255, 255, 255, 0.95); font-size: clamp(20px, 2.6vw, 26px); line-height: 1.4;
+  padding-left: 20px; border-left: 3px solid rgba(255, 255, 255, 0.6);
+}
+.palco .citacao small { display: block; font: 500 14px -apple-system, sans-serif; opacity: .7; margin-top: 10px; }
+@media (max-width: 640px) {
+  .palco { height: 460px; }
+  .palco .citacao { left: 24px; right: 24px; bottom: 28px; }
+}
+
+section { padding: 112px 0 0; }
+.cabeca { max-width: 640px; }
+.cabeca .rotulo { color: var(--verde); font-weight: 600; font-size: 15px; }
+.cabeca h2 { font-size: clamp(32px, 4.4vw, 48px); line-height: 1.08; letter-spacing: -0.03em; margin-top: 8px; }
+.cabeca p { color: var(--suave); font-size: 19px; margin-top: 16px; }
+
+.grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 44px; }
+.cartao { background: var(--superficie); border: 1px solid var(--linha); border-radius: 22px; padding: 26px; box-shadow: var(--sombra); }
+.cartao h3 { font-size: 19px; letter-spacing: -0.01em; }
+.cartao p { color: var(--suave); margin-top: 8px; font-size: 16px; }
+.cartao .numero { font: 600 13px -apple-system, sans-serif; color: var(--verde); margin-bottom: 18px; }
+@media (max-width: 860px) { .grade { grid-template-columns: 1fr; } }
+
+.faixas { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+.faixas span { font-size: 14px; padding: 6px 12px; border-radius: 999px; background: var(--verde-claro); color: var(--verde); font-weight: 500; }
+
+.pagina { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; margin-top: 44px; }
+.pagina .dia { padding: 32px; }
+.pagina .dia .data { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.pagina .dia .sub { color: var(--suave); }
+.pagina .dia blockquote { margin-top: 26px; padding-left: 18px; border-left: 3px solid var(--verde); font-size: 21px; line-height: 1.45; }
+.pagina .dia blockquote small { display: block; font: 500 14px -apple-system, sans-serif; color: var(--suave); margin-top: 8px; }
+.pagina .lista { display: grid; gap: 16px; }
+.selo { display: flex; align-items: center; gap: 14px; background: var(--verde); color: #fff; border: none; }
+.selo svg { width: 34px; height: 34px; flex: none; }
+.selo p { color: rgba(255, 255, 255, 0.8); margin: 2px 0 0; }
+.gravando { display: flex; align-items: center; gap: 12px; }
+.gravando .ponto { width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; animation: pulsar 1.2s ease-in-out infinite; }
+.gravando .tempo { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--suave); }
+.onda { display: flex; gap: 3px; align-items: center; height: 28px; margin-top: 14px; }
+.onda i { width: 3px; border-radius: 2px; background: var(--verde); opacity: .7; animation: onda 1.1s ease-in-out infinite; }
+@media (max-width: 860px) { .pagina { grid-template-columns: 1fr; } }
+
+.jardim { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 44px; }
+.jardim figure { background: var(--superficie); border: 1px solid var(--linha); border-radius: 18px; padding: 10px 6px 14px; text-align: center; transition: transform .3s cubic-bezier(.2, .9, .3, 1.2); }
+.jardim figure:hover { transform: translateY(-4px); }
+.jardim svg { width: 100%; height: 108px; }
+.jardim figcaption { font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+.jardim figcaption b { display: block; text-transform: none; letter-spacing: 0; color: var(--texto); font-size: 14px; margin-top: 2px; }
+.jardim .bloqueada svg { filter: grayscale(1); opacity: .45; }
+@media (max-width: 860px) { .jardim { grid-template-columns: repeat(3, 1fr); } }
+
+.privacidade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 44px; }
+.privacidade h3 { font-size: 18px; }
+.privacidade p { color: var(--suave); margin-top: 6px; font-size: 16px; }
+@media (max-width: 860px) { .privacidade { grid-template-columns: 1fr; } }
+
+.instalar { background: var(--superficie); border: 1px solid var(--linha); border-radius: 28px; padding: 48px; margin-top: 44px; box-shadow: var(--sombra); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.instalar ol { padding-left: 20px; display: grid; gap: 12px; color: var(--suave); }
+.instalar ol b { color: var(--texto); font-weight: 600; }
+pre { background: var(--fundo); border: 1px solid var(--linha); border-radius: 14px; padding: 16px; font: 13px/1.6 ui-monospace, "SF Mono", Menlo, monospace; overflow-x: auto; color: var(--texto); }
+@media (max-width: 860px) { .instalar { grid-template-columns: 1fr; padding: 28px; } }
+
+footer { padding: 96px 0 56px; text-align: center; color: var(--suave); font-size: 14px; }
+footer img { width: 40px; height: 40px; border-radius: 10px; margin-bottom: 14px; }
+
+.revelar { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
+.revelar.visivel { opacity: 1; transform: none; }
+
+@keyframes surgir { from { opacity: 0; transform: scale(.6); } }
+@keyframes descer { from { opacity: 0; transform: translateY(-24px) scale(.96); } }
+@keyframes pulsar { 50% { opacity: .35; transform: scale(.8); } }
+@keyframes onda { 50% { transform: scaleY(.35); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .revelar { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="marca" href="#"><img src="icone.png" alt="">Altar</a>
+  <div class="links">
+    <a href="#lembretes">Lembretes</a>
+    <a href="#pagina">Página do dia</a>
+    <a href="#plantas">Plantas</a>
+    <a href="#instalar">Instalar</a>
+  </div>
+  <a class="botao" href="https://github.com/danielgacioly/altar-app/releases/latest">Baixar</a>
+</nav>
+
+<header class="hero largura">
+  <img class="icone" src="icone.png" alt="Ícone do Altar">
+  <h1>Um tempo com Deus,<br><span>todos os dias.</span></h1>
+  <p>O Altar é um app de Mac que lembra você do devocional enquanto o dia acontece e guarda uma página para cada dia.</p>
+  <div class="acoes">
+    <a class="botao" href="https://github.com/danielgacioly/altar-app/releases/latest">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7.5 8 11.5l4-4M3 14h10"/></svg>
+      Baixar para Mac
+    </a>
+    <a class="botao leve" href="https://github.com/danielgacioly/altar-app">Ver o código</a>
+  </div>
+  <div class="nota">Grátis e de código aberto · macOS 26 ou mais novo</div>
+
+  <div class="palco">
+    <div class="barra-menu">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5c2-.8 4-.6 5.5.6v9c-1.5-1-3.5-1.2-5.5-.5zM14 3.5c-2-.8-4-.6-5.5.6v9c1.5-1 3.5-1.2 5.5-.5z"/></svg>
+      <span id="relogio">9:41</span>
+    </div>
+    <div class="notificacao">
+      <span class="fechar"><svg width="9" height="9" viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l6 6M8 2 2 8"/></svg></span>
+      <img src="icone.png" alt="">
+      <div class="texto">
+        <b>Bom dia! Que tal começar o dia com o devocional?</b>
+        <div class="versiculo">Lâmpada para os meus pés é tua palavra e luz, para o meu caminho.</div>
+        <div class="rodape"><span>Salmos 119:105</span><span class="opcoes">Opções <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m2 4 3 3 3-3"/></svg></span></div>
+      </div>
+    </div>
+    <div class="citacao serif">“Buscai primeiro o Reino de Deus, e a sua justiça.”<small>Mateus 6:33 · ARC</small></div>
+  </div>
+</header>
+
+<section id="lembretes" class="largura">
+  <div class="cabeca revelar">
+    <div class="rotulo">Lembretes</div>
+    <h2>Lembra no meio do dia, não no meio do sono.</h2>
+    <p>O Altar conta o tempo em que você está usando o Mac. A cada 30 minutos de uso, chega uma pergunta com um versículo. Respondeu Sim, ele silencia até o dia seguinte.</p>
+  </div>
+  <div class="grade">
+    <div class="cartao revelar"><div class="numero">Sim</div><h3>Feito por hoje</h3><p>Marca o dia como feito e não incomoda mais até a madrugada.</p></div>
+    <div class="cartao revelar"><div class="numero">Não</div><h3>Mais tarde</h3><p>Espera mais 30 minutos de uso e pergunta de novo, com outra frase.</p></div>
+    <div class="cartao revelar"><div class="numero">Em 15 min</div><h3>Só um instante</h3><p>Volta daqui a pouco, quando você terminar o que estava fazendo.</p></div>
+  </div>
+  <div class="faixas revelar">
+    <span>Começo do dia</span><span>Antes do almoço</span><span>Depois do almoço</span><span>Antes da faculdade</span><span>Anoitecendo</span><span>Encerramento</span><span>Antes de dormir</span>
+  </div>
+</section>
+
+<section id="pagina" class="largura">
+  <div class="cabeca revelar">
+    <div class="rotulo">Página do dia</div>
+    <h2>Cada devocional vira uma página.</h2>
+    <p>O versículo do dia, a hora em que você marcou, o que escreveu, notas ditadas pelo microfone e orações gravadas em áudio para ouvir depois.</p>
+  </div>
+  <div class="pagina">
+    <div class="cartao dia revelar">
+      <div class="data">Segunda-feira, 2 de novembro</div>
+      <div class="sub">Seu devocional de hoje</div>
+      <blockquote class="serif">“Sacia-nos de madrugada com a tua benignidade, para que nos regozijemos e nos alegremos todos os nossos dias.”<small>Salmos 90:14 · ARC</small></blockquote>
+    </div>
+    <div class="lista">
+      <div class="cartao selo revelar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 14.4 4l2.8-.2.9 2.7 2.3 1.6-.9 2.7.9 2.7-2.3 1.6-.9 2.7-2.8-.2L12 21.5 9.6 20l-2.8.2-.9-2.7-2.3-1.6.9-2.7-.9-2.7 2.3-1.6.9-2.7 2.8.2z"/><path d="m8.5 12 2.3 2.3 4.7-4.6"/></svg>
+        <div><h3>Devocional registrado</h3><p>Às 7:42 · 12 dias seguidos</p></div>
+      </div>
+      <div class="cartao revelar">
+        <div class="gravando"><span class="ponto"></span><h3>Gravando oração</h3><span class="tempo" id="tempo">0:00</span></div>
+        <div class="onda" id="onda"></div>
+      </div>
+      <div class="cartao revelar"><h3>Notas por voz</h3><p>A transcrição acontece no próprio Mac, em português, sem enviar o áudio para lugar nenhum.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="plantas" class="largura">
+  <div class="cabeca revelar">
+    <div class="rotulo">Plantas</div>
+    <h2>Uma árvore para cada mês do ano.</h2>
+    <p>Cada devocional faz a planta do mês crescer. Quando o mês acaba, ela é colhida do tamanho que chegou. Os meses que ainda não vieram esperam em preto e branco.</p>
+  </div>
+  <div class="jardim" id="jardim"></div>
+</section>
+
+<section class="largura">
+  <div class="cabeca revelar">
+    <div class="rotulo">Privacidade</div>
+    <h2>Fica entre você e Deus.</h2>
+  </div>
+  <div class="privacidade">
+    <div class="revelar"><h3>Sem conta na internet</h3><p>Sua conta é só um nome e uma foto guardados no seu Mac.</p></div>
+    <div class="revelar"><h3>Sem nuvem</h3><p>Páginas, notas e orações ficam numa pasta do seu computador.</p></div>
+    <div class="revelar"><h3>Backup quando quiser</h3><p>Exporte tudo num arquivo e restaure em outro Mac.</p></div>
+  </div>
+</section>
+
+<section id="instalar" class="largura">
+  <div class="instalar revelar">
+    <div class="cabeca">
+      <div class="rotulo">Instalar</div>
+      <h2>Pronto em um minuto.</h2>
+      <ol style="margin-top: 22px">
+        <li><b>Baixe o Altar</b> e arraste para a pasta Aplicativos.</li>
+        <li><b>Abra o app.</b> Ele pede permissão para notificações e passa a abrir junto com o login.</li>
+        <li>Em <b>Ajustes do Sistema &gt; Notificações &gt; Altar</b>, escolha <b>Alertas</b>, para o lembrete ficar na tela até você responder.</li>
+      </ol>
+    </div>
+    <div>
+      <p style="color: var(--suave); margin-bottom: 12px">Ou compile a partir do código, com o Xcode 26:</p>
+      <pre>git clone https://github.com/danielgacioly/altar-app
+cd altar-app
+xcodebuild -project Altar.xcodeproj -scheme Altar \
+  -configuration Release -derivedDataPath build build
+cp -R build/Build/Products/Release/Altar.app /Applications/</pre>
+    </div>
+  </div>
+</section>
+
+<footer class="largura">
+  <img src="icone.png" alt=""><br>
+  Altar · feito com cuidado para quem quer começar e terminar o dia com a Palavra.<br>
+  <a href="https://github.com/danielgacioly/altar-app" style="color: var(--verde)">GitHub</a>
+</footer>
+
+<script>
+const arvores = [
+  ["Janeiro", "Ipê-amarelo", "redonda", "#F2C12E", "#3F7FBF"],
+  ["Fevereiro", "Palmeira", "palmeira", "#4E9A4A", "#E8C468"],
+  ["Março", "Oliveira", "redonda", "#8FA67E", "#C9B79C"],
+  ["Abril", "Cerejeira", "redonda", "#F2A7C3", "#E8E1D3"],
+  ["Maio", "Cedro do Líbano", "camadas", "#2E6B3F", "#78909C"],
+  ["Junho", "Flamboyant", "guarda", "#E2552C", "#E8E1D3"],
+  ["Julho", "Araucária", "candelabro", "#2F5D3A", "#9C7AD1"],
+  ["Agosto", "Ipê-roxo", "redonda", "#B46FC9", "#4DB6AC"],
+  ["Setembro", "Jacarandá", "guarda", "#8E83E0", "#F2A65A"],
+  ["Outubro", "Cipreste", "coluna", "#3C7A4A", "#D9774B"],
+  ["Novembro", "Figueira", "oval", "#4F9F45", "#26A69A"],
+  ["Dezembro", "Pinheiro", "cone", "#2F7D4F", "#B5654A"]
+];
+const bolas = (lista, cor) => lista.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${cor}"/>`).join("");
+function copa(forma, cor) {
+  const escuro = "rgba(0,0,0,.18)";
+  const tronco = `<path d="M50 84 Q48 64 50 46" stroke="#6b4e36" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+  switch (forma) {
+    case "palmeira":
+      return `<path d="M50 84 Q46 60 54 32" stroke="#9c7a55" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+        [-150, -120, -90, -60, -30, -170, -10].map(a => {
+          const r = a * Math.PI / 180, x = 54 + Math.cos(r) * 24, y = 32 + Math.sin(r) * 10 + 12;
+          return `<path d="M54 32 Q${54 + Math.cos(r) * 14} ${32 + Math.sin(r) * 16} ${x} ${y}" stroke="${cor}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+        }).join("");
+    case "cone":
+      return tronco + [0, 1, 2, 3].map(i => `<path d="M${50 - 22 + i * 4} ${70 - i * 12} L50 ${46 - i * 12} L${50 + 22 - i * 4} ${70 - i * 12} Z" fill="${cor}"/>`).join("");
+    case "camadas":
+      return tronco + [0, 1, 2, 3].map(i => `<ellipse cx="50" cy="${66 - i * 11}" rx="${26 - i * 5}" ry="5.5" fill="${cor}"/>`).join("");
+    case "coluna":
+      return tronco + bolas([[50, 64, 8], [49, 54, 8.5], [51, 44, 8], [50, 34, 7], [50, 26, 5]], cor);
+    case "oval":
+      return tronco + bolas([[50, 58, 12], [42, 48, 10], [58, 48, 10], [50, 40, 12], [50, 28, 9]], cor);
+    case "guarda":
+      return `<path d="M50 84 Q49 66 50 52 M50 62 Q40 54 32 46 M50 62 Q60 54 68 46" stroke="#5f4b3a" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+        bolas([[28, 46, 8], [72, 46, 8], [38, 41, 10], [62, 41, 10], [50, 39, 11]], cor);
+    case "candelabro":
+      return `<path d="M50 84 Q49 60 50 30" stroke="#6b4a35" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+        [[-1, 26, 44, 58], [1, 26, 44, 58], [-1, 18, 36, 48], [1, 18, 36, 48], [-1, 10, 30, 40], [1, 10, 30, 40]].map(([l, dx, y, y0]) =>
+          `<path d="M50 ${y0} Q${50 + l * (dx - 2)} ${y0} ${50 + l * dx} ${y}" stroke="#6b4a35" stroke-width="1.8" fill="none" stroke-linecap="round"/><ellipse cx="${50 + l * dx}" cy="${y}" rx="8" ry="3.2" fill="${cor}"/>`
+        ).join("") + `<ellipse cx="50" cy="29" rx="7" ry="3" fill="${cor}"/>`;
+    default:
+      return tronco + bolas([[50, 50, 9], [37, 48, 11], [63, 48, 11], [50, 36, 13], [40, 38, 9], [60, 38, 9]], cor) +
+        `<circle cx="44" cy="32" r="3.5" fill="rgba(255,255,255,.25)"/>`;
+  }
+}
+const mesAtual = new Date().getMonth();
+document.getElementById("jardim").innerHTML = arvores.map(([mes, nome, forma, cor, vaso], i) => `
+  <figure class="revelar ${i > mesAtual ? "bloqueada" : ""}">
+    <svg viewBox="0 0 100 108" aria-hidden="true">
+      ${copa(forma, cor)}
+      <path d="M33 84 H67 L63 104 Q50 107 37 104 Z" fill="${vaso}"/>
+      <rect x="31" y="81" width="38" height="6" rx="2" fill="${vaso}" style="filter: brightness(.92)"/>
+      <circle cx="45" cy="93" r="1.5" fill="#333"/><circle cx="55" cy="93" r="1.5" fill="#333"/>
+      <path d="M47.5 97 Q50 99.5 52.5 97" stroke="#333" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <figcaption>${mes}<b>${nome}</b></figcaption>
+  </figure>`).join("");
+
+const onda = document.getElementById("onda");
+onda.innerHTML = Array.from({ length: 48 }, (_, i) => `<i style="height:${6 + Math.abs(Math.sin(i * 0.7) * 20)}px; animation-delay:${(i % 12) * -0.09}s"></i>`).join("");
+let segundos = 0;
+setInterval(() => { segundos = (segundos + 1) % 600; document.getElementById("tempo").textContent = `${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, "0")}`; }, 1000);
+const agora = new Date();
+document.getElementById("relogio").textContent = agora.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" }).replace(/\./g, "") + "  " + agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+const observador = new IntersectionObserver(entradas => {
+  entradas.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visivel"); observador.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll(".revelar").forEach((el, i) => { el.style.transitionDelay = `${(i % 6) * 60}ms`; observador.observe(el); });
+</script>
+</body>
+</html>

@@ -2,7 +2,9 @@
 
 App de macOS que lembra você de fazer o devocional ao longo do dia e guarda uma página para cada dia: versículo, horário em que você fez, o que escreveu, notas ditadas pelo microfone e orações gravadas em áudio.
 
-Tudo roda e fica salvo no seu Mac. Sem conta, sem nuvem.
+Tudo roda e fica salvo no seu Mac. Sem login, sem nuvem.
+
+Site: https://danielgacioly.github.io/altar-app (pasta `docs/`).
 
 ## Como funciona
 
@@ -14,7 +16,16 @@ Tudo roda e fica salvo no seu Mac. Sem conta, sem nuvem.
   - **Me lembra em 15 min**: o próximo lembrete vem mais cedo.
   - **Botão extra** (opcional): aparece só nos dias e horários que você escolher, com o nome e o efeito que quiser. Exemplo: "Estou na faculdade" de segunda a quinta, das 17h às 21h, silenciando até o fim do horário.
 - Tela bloqueada ou Mac dormindo não contam como uso. O modo Foco do macOS é respeitado.
-- A janela (menu do ícone > Abrir o Altar) tem as telas **Hoje**, **Histórico**, **Versículos** e **Ajustes**.
+- A janela (menu do ícone > Abrir o Altar) tem as telas **Hoje**, **Histórico**, **Plantas**, **Mensagens**, **Ajustes** e **Minha conta**.
+- Na primeira abertura, uma tela de boas-vindas apresenta o app e pede seu nome.
+
+## Plantas
+
+Cada mês do ano tem uma árvore: ipê-amarelo, palmeira, oliveira, cerejeira, cedro do Líbano, flamboyant, araucária, ipê-roxo, jacarandá, cipreste, figueira e pinheiro. Cada devocional do mês faz a árvore crescer, e no fim do mês ela é colhida do tamanho que chegou (15 devocionais num mês de 30 dias deixam a árvore pela metade). Os meses que ainda não chegaram aparecem em preto e branco.
+
+## Minha conta
+
+A conta é só local: nome, foto e um resumo dos seus devocionais. Dali você exporta um backup (.zip com tudo, inclusive os áudios) e restaura em outro Mac.
 
 ## Tudo é configurável
 
@@ -57,6 +68,7 @@ cp -R build/Build/Products/Release/Altar.app /Applications/
 - `dias/`: uma página por dia
 - `oracoes/`: os áudios das orações (AAC)
 - `registro.jsonl`: cada lembrete e cada resposta, usado no Histórico
+- `perfil.json` e `foto.png`: nome e foto da sua conta
 
 ## Para quem vai mexer no código
 

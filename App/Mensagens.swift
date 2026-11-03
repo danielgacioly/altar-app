@@ -104,17 +104,8 @@ struct EditorDeMensagem: View {
                     .scrollContentBackground(.hidden)
             }
             Section("Como aparece") {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(versiculo.texto.isEmpty ? "O texto da mensagem aparece aqui." : versiculo.texto)
-                        .font(.system(.body, design: .serif))
-                    Text(versiculo.rodape)
-                        .font(.caption.weight(.semibold))
-                        .opacity(0.85)
-                }
-                .foregroundStyle(.white)
-                .padding(14)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(verdeFundo, in: RoundedRectangle(cornerRadius: 10))
+                Citacao(versiculo: versiculo, tamanho: 17)
+                    .padding(.vertical, 6)
             }
         }
         .formStyle(.grouped)
